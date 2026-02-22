@@ -69,6 +69,7 @@
     "lang": "Language",
     "list": "List",
     "listType": "List Type",
+    "roleDescription": "Role Description",
     "tabIndex": "tabindex",
     "warning": "Warning",
     "error": "Error"

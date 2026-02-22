@@ -79,6 +79,10 @@
   background-color: var(--base-pink);
 }
 
+.Tip--roleDescription {
+  background-color: var(--base-green);
+}
+
 .Tip--ariaAttributes {
   background-color: var(--base-pink);
 }

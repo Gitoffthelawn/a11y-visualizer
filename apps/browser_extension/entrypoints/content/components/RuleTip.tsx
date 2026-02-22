@@ -18,6 +18,7 @@ import {
   IoOpenOutline,
   IoPin,
   IoPricetag,
+  IoPricetagOutline,
   IoWarning,
 } from "react-icons/io5";
 import { useLang } from "../../../src/useLang";
@@ -157,6 +158,14 @@ const Icon = ({ type }: { type: RuleResult["type"] }) => {
           className="Tip__icon"
           role="img"
           aria-label={t("tip.listType")}
+        />
+      );
+    case "roleDescription":
+      return (
+        <IoPricetagOutline
+          className="Tip__icon"
+          role="img"
+          aria-label={t("tip.roleDescription")}
         />
       );
     case "ariaAttributes":

@@ -69,6 +69,7 @@
     "lang": "언어",
     "list": "리스트",
     "listType": "리스트 종류",
+    "roleDescription": "롤 설명",
     "tabIndex": "tabindex",
     "warning": "경고",
     "error": "오류"
