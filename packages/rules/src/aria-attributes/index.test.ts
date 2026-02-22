@@ -254,6 +254,75 @@ describe("AriaAttributes", () => {
     });
   });
 
+  test("returns roleDescription type result for aria-roledescription", () => {
+    document.body.innerHTML = `<div role="slider" aria-roledescription="スライダー">Content</div>`;
+    const element = document.querySelector("div");
+    if (!element) {
+      throw new Error("Element not found");
+    }
+    const result = AriaAttributes.evaluate(
+      element,
+      AriaAttributes.defaultOptions,
+      {},
+    );
+    expect(result).toContainEqual({
+      type: "roleDescription",
+      content: "スライダー",
+      ruleName: "aria-attributes",
+    });
+  });
+
+  test("returns roleDescription and ariaAttributes both when other aria attributes exist", () => {
+    document.body.innerHTML = `<div role="slider" aria-roledescription="スライダー" aria-controls="menu1">Content</div>`;
+    const element = document.querySelector("div");
+    if (!element) {
+      throw new Error("Element not found");
+    }
+    const result = AriaAttributes.evaluate(
+      element,
+      AriaAttributes.defaultOptions,
+      {},
+    );
+    expect(result).toHaveLength(2);
+    expect(result).toContainEqual({
+      type: "roleDescription",
+      content: "スライダー",
+      ruleName: "aria-attributes",
+    });
+    expect(result).toContainEqual({
+      type: "ariaAttributes",
+      attributes: [
+        { name: "aria-controls", value: "menu1" },
+        { name: "aria-roledescription", value: "スライダー" },
+      ],
+      ruleName: "aria-attributes",
+    });
+  });
+
+  test("returns roleDescription and ariaAttributes both when only aria-roledescription exists", () => {
+    document.body.innerHTML = `<div role="slider" aria-roledescription="スライダー">Content</div>`;
+    const element = document.querySelector("div");
+    if (!element) {
+      throw new Error("Element not found");
+    }
+    const result = AriaAttributes.evaluate(
+      element,
+      AriaAttributes.defaultOptions,
+      {},
+    );
+    expect(result).toHaveLength(2);
+    expect(result).toContainEqual({
+      type: "roleDescription",
+      content: "スライダー",
+      ruleName: "aria-attributes",
+    });
+    expect(result).toContainEqual({
+      type: "ariaAttributes",
+      attributes: [{ name: "aria-roledescription", value: "スライダー" }],
+      ruleName: "aria-attributes",
+    });
+  });
+
   test("does not show warning for aria-hidden elements with tabindex -1 focusable descendants", () => {
     const div = document.createElement("div");
     div.setAttribute("aria-hidden", "true");

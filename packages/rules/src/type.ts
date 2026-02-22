@@ -32,6 +32,7 @@ export const CONTENT_TYPES = [
   "tableCellPosition",
   "list",
   "listType",
+  "roleDescription",
   "ariaAttribute",
   "tabIndex",
 ] as const;
@@ -52,6 +53,7 @@ export type RuleResultContent = RuleResultBase & {
     | "tableCellPosition"
     | "list"
     | "listType"
+    | "roleDescription"
     | "ariaAttribute"
     | "tabIndex";
   content: string;
@@ -65,6 +67,7 @@ export const RAW_CONTENT_TYPES = [
   "linkTarget",
   "pageTitle",
   "tableHeader",
+  "roleDescription",
   "ariaAttribute",
   "tabIndex",
 ] as const;

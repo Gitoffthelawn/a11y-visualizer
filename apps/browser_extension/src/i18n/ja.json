@@ -69,6 +69,7 @@
     "lang": "言語",
     "list": "リスト",
     "listType": "リスト種別",
+    "roleDescription": "ロール説明",
     "tabIndex": "tabindex",
     "warning": "警告",
     "error": "エラー"

@@ -81,6 +81,20 @@ export const AriaAttributes: RuleObject = {
     const ariaAttributesList: Array<{ name: string; value: string }> = [];
     const warnings: RuleResult[] = [];
 
+    // aria-roledescriptionを個別に処理
+    const roleDescriptionValue = element.getAttribute("aria-roledescription");
+
+    const results: RuleResult[] = [];
+
+    // roleDescriptionは専用チップで表示
+    if (roleDescriptionValue !== null) {
+      results.push({
+        type: "roleDescription",
+        content: roleDescriptionValue,
+        ruleName,
+      });
+    }
+
     // 要素に存在する属性を検出し、ariaAttributes配列の順序で処理
     for (const attribute of ariaAttributes) {
       const value = element.getAttribute(attribute);
@@ -105,8 +119,6 @@ export const AriaAttributes: RuleObject = {
       // すべてのaria属性をariaAttributesに含める
       ariaAttributesList.push({ name: attribute, value });
     }
-
-    const results: RuleResult[] = [];
 
     // 警告は個別に表示
     results.push(...warnings);
