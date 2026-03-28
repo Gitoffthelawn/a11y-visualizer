@@ -1,0 +1,207 @@
+---
+import CategoryTitle from "./CategoryTitle.astro";
+import CategorySectionTitle from "./CategorySectionTitle.astro";
+import ExampleCard from "./ExampleCard.astro";
+import { createLocalT } from "../../lib/i18n";
+import { en, ja } from "./ShadowDomTests.lang";
+
+interface Props {
+  lang?: string;
+}
+const lang = (Astro.props as Props).lang || "en";
+const t = createLocalT(lang === "ja" ? ja : en, en);
+---
+
+<CategoryTitle id="shadow-dom">{t("title")}</CategoryTitle>
+<p class="text-zinc-700 dark:text-zinc-300 mb-6">{t("intro")}</p>
+
+<CategorySectionTitle id="shadow-dom-form"
+  >{t("sections.form.title")}</CategorySectionTitle
+>
+
+<ExampleCard
+  title={t("examples.form.accessible.title")}
+  description={t("examples.form.accessible.desc")}
+>
+  <shadow-form-accessible></shadow-form-accessible>
+</ExampleCard>
+
+<ExampleCard
+  title={t("examples.form.noLabels.title")}
+  description={t("examples.form.noLabels.desc")}
+>
+  <shadow-form-no-labels></shadow-form-no-labels>
+</ExampleCard>
+
+<CategorySectionTitle id="shadow-dom-image"
+  >{t("sections.image.title")}</CategorySectionTitle
+>
+
+<ExampleCard
+  title={t("examples.image.noAlt.title")}
+  description={t("examples.image.noAlt.desc")}
+>
+  <shadow-image-no-alt></shadow-image-no-alt>
+</ExampleCard>
+
+<ExampleCard
+  title={t("examples.image.withAlt.title")}
+  description={t("examples.image.withAlt.desc")}
+>
+  <shadow-image-with-alt></shadow-image-with-alt>
+</ExampleCard>
+
+<CategorySectionTitle id="shadow-dom-nested"
+  >{t("sections.nested.title")}</CategorySectionTitle
+>
+
+<ExampleCard
+  title={t("examples.nested.accessible.title")}
+  description={t("examples.nested.accessible.desc")}
+>
+  <shadow-outer-component></shadow-outer-component>
+</ExampleCard>
+
+<script>
+  // Accessible form in Shadow DOM
+  class ShadowFormAccessible extends HTMLElement {
+    constructor() {
+      super();
+      this.attachShadow({ mode: "open" });
+    }
+    connectedCallback() {
+      this.shadowRoot!.innerHTML = `
+        <style>
+          .form { display: flex; flex-direction: column; gap: 0.75rem; max-width: 300px; }
+          label { font-weight: 500; color: #334155; font-size: 0.9rem; }
+          input { padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 1rem; }
+          input:focus { outline: 2px solid #0d9488; outline-offset: 2px; }
+          button { padding: 0.5rem 1rem; background: #0d9488; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; }
+        </style>
+        <form class="form">
+          <div>
+            <label for="sd-name">Name</label>
+            <input type="text" id="sd-name" name="name">
+          </div>
+          <div>
+            <label for="sd-email">Email</label>
+            <input type="email" id="sd-email" name="email">
+          </div>
+          <button type="submit">Submit</button>
+        </form>
+      `;
+      this.shadowRoot!.querySelector("form")!.addEventListener("submit", (e) =>
+        e.preventDefault(),
+      );
+    }
+  }
+
+  // Form without labels in Shadow DOM
+  class ShadowFormNoLabels extends HTMLElement {
+    constructor() {
+      super();
+      this.attachShadow({ mode: "open" });
+    }
+    connectedCallback() {
+      this.shadowRoot!.innerHTML = `
+        <style>
+          .form { display: flex; flex-direction: column; gap: 0.75rem; max-width: 300px; }
+          input { padding: 0.5rem; border: 1px solid #fecaca; border-radius: 4px; font-size: 1rem; background: #fef2f2; }
+          input:focus { outline: 2px solid #0d9488; outline-offset: 2px; }
+          button { padding: 0.5rem 1rem; background: #0d9488; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; }
+        </style>
+        <form class="form">
+          <input type="text" placeholder="Name">
+          <input type="email" placeholder="Email">
+          <button type="submit">Submit</button>
+        </form>
+      `;
+      this.shadowRoot!.querySelector("form")!.addEventListener("submit", (e) =>
+        e.preventDefault(),
+      );
+    }
+  }
+
+  // Image without alt in Shadow DOM
+  class ShadowImageNoAlt extends HTMLElement {
+    constructor() {
+      super();
+      this.attachShadow({ mode: "open" });
+    }
+    connectedCallback() {
+      this.shadowRoot!.innerHTML = `
+        <style>
+          img { max-width: 160px; border-radius: 4px; border: 2px solid #fecaca; }
+        </style>
+        <img src="/a11y-visualizer/images/bigsight.jpg" width="160" height="120">
+      `;
+    }
+  }
+
+  // Image with alt in Shadow DOM
+  class ShadowImageWithAlt extends HTMLElement {
+    constructor() {
+      super();
+      this.attachShadow({ mode: "open" });
+    }
+    connectedCallback() {
+      this.shadowRoot!.innerHTML = `
+        <style>
+          img { max-width: 160px; border-radius: 4px; border: 2px solid #bbf7d0; }
+        </style>
+        <img src="/a11y-visualizer/images/bigsight.jpg" alt="Tokyo Big Sight" width="160" height="120">
+      `;
+    }
+  }
+
+  // Outer component (nested Shadow DOM)
+  class ShadowOuterComponent extends HTMLElement {
+    constructor() {
+      super();
+      this.attachShadow({ mode: "open" });
+    }
+    connectedCallback() {
+      this.shadowRoot!.innerHTML = `
+        <style>
+          .outer { border: 2px dashed #0d9488; border-radius: 8px; padding: 1rem; background: #f0fdfa; }
+          h3 { margin: 0 0 0.5rem 0; color: #0f766e; font-size: 1rem; }
+          p { margin: 0 0 0.75rem 0; color: #334155; font-size: 0.9rem; }
+        </style>
+        <div class="outer" role="region" aria-label="Outer component">
+          <h3>Outer Component</h3>
+          <p>This component contains a nested Web Component inside its Shadow DOM.</p>
+          <shadow-inner-component></shadow-inner-component>
+        </div>
+      `;
+    }
+  }
+
+  // Inner component (nested inside outer Shadow DOM)
+  class ShadowInnerComponent extends HTMLElement {
+    constructor() {
+      super();
+      this.attachShadow({ mode: "open" });
+    }
+    connectedCallback() {
+      this.shadowRoot!.innerHTML = `
+        <style>
+          .inner { border: 1px solid #14b8a6; border-radius: 4px; padding: 0.75rem; background: white; }
+          h4 { margin: 0 0 0.5rem 0; color: #0d9488; font-size: 0.9rem; }
+          button { padding: 0.5rem 1rem; background: #0d9488; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        </style>
+        <div class="inner" role="region" aria-label="Inner component">
+          <h4>Inner Component (Nested Shadow DOM)</h4>
+          <button type="button">Action Button</button>
+        </div>
+      `;
+    }
+  }
+
+  // Register all custom elements
+  customElements.define("shadow-form-accessible", ShadowFormAccessible);
+  customElements.define("shadow-form-no-labels", ShadowFormNoLabels);
+  customElements.define("shadow-image-no-alt", ShadowImageNoAlt);
+  customElements.define("shadow-image-with-alt", ShadowImageWithAlt);
+  customElements.define("shadow-outer-component", ShadowOuterComponent);
+  customElements.define("shadow-inner-component", ShadowInnerComponent);
+</script>
