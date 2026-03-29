@@ -9,6 +9,7 @@ import TableTests from "../../components/tests/TableTests.astro";
 import AriaHiddenTests from "../../components/tests/AriaHiddenTests.astro";
 import LayoutTests from "../../components/tests/LayoutTests.astro";
 import LiveRegionTests from "../../components/tests/LiveRegionTests.astro";
+import ShadowDomTests from "../../components/tests/ShadowDomTests.astro";
 import Warning from "../../components/tests/Warning.astro";
 
 export const prerender = true;
@@ -89,6 +90,11 @@ const t = createLocalT(pageJa, pageEn);
         class="text-teal-700 dark:text-teal-300 hover:text-teal-800 dark:hover:text-teal-200 underline hover:no-underline font-medium"
         >{t("categories.headings.liveRegions")}</a
       >
+      <a
+        href="#shadow-dom"
+        class="text-teal-700 dark:text-teal-300 hover:text-teal-800 dark:hover:text-teal-200 underline hover:no-underline font-medium"
+        >{t("categories.headings.shadowDom")}</a
+      >
     </div>
   </div>
   <!-- コンポーネント（見出しのみ日本語に対応） -->
@@ -101,4 +107,5 @@ const t = createLocalT(pageJa, pageEn);
   <TableTests lang="ja" />
   <AriaHiddenTests lang="ja" />
   <LiveRegionTests lang="ja" />
+  <ShadowDomTests lang="ja" />
 </TestPageLayout>

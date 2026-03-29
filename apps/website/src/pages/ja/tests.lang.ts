@@ -24,6 +24,7 @@ const dict = {
       ariaHidden: "ARIA Hidden",
       landmarks: "レイアウトとランドマーク",
       liveRegions: "ライブリージョン",
+      shadowDom: "Shadow DOM",
     },
   },
 } as const;

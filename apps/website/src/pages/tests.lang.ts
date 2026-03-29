@@ -24,6 +24,7 @@ const dict = {
       ariaHidden: "ARIA Hidden",
       landmarks: "Layout & Landmarks",
       liveRegions: "Live Regions",
+      shadowDom: "Shadow DOM",
     },
   },
 } as const;
