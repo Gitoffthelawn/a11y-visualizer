@@ -5,6 +5,7 @@ import ButtonTests from "../../components/tests/ButtonTests.astro";
 import LinkTests from "../../components/tests/LinkTests.astro";
 import FormControlTests from "../../components/tests/FormControlTests.astro";
 import HeadingTests from "../../components/tests/HeadingTests.astro";
+import ListTests from "../../components/tests/ListTests.astro";
 import TableTests from "../../components/tests/TableTests.astro";
 import AriaHiddenTests from "../../components/tests/AriaHiddenTests.astro";
 import LayoutTests from "../../components/tests/LayoutTests.astro";
@@ -76,6 +77,11 @@ const t = createLocalT(pageJa, pageEn);
         >{t("categories.headings.landmarks")}</a
       >
       <a
+        href="#lists"
+        class="text-teal-700 dark:text-teal-300 hover:text-teal-800 dark:hover:text-teal-200 underline hover:no-underline font-medium"
+        >{t("categories.headings.lists")}</a
+      >
+      <a
         href="#tables"
         class="text-teal-700 dark:text-teal-300 hover:text-teal-800 dark:hover:text-teal-200 underline hover:no-underline font-medium"
         >{t("categories.headings.tables")}</a
@@ -104,6 +110,7 @@ const t = createLocalT(pageJa, pageEn);
   <ButtonTests lang="ja" />
   <FormControlTests lang="ja" />
   <LayoutTests lang="ja" />
+  <ListTests lang="ja" />
   <TableTests lang="ja" />
   <AriaHiddenTests lang="ja" />
   <LiveRegionTests lang="ja" />
