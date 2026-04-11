@@ -20,6 +20,7 @@ const dict = {
       links: "リンク",
       forms: "フォームコントロール",
       headings: "見出し",
+      lists: "リスト",
       tables: "テーブル",
       ariaHidden: "ARIA Hidden",
       landmarks: "レイアウトとランドマーク",

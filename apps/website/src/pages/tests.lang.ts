@@ -20,6 +20,7 @@ const dict = {
       links: "Links",
       forms: "Form Controls",
       headings: "Headings",
+      lists: "Lists",
       tables: "Tables",
       ariaHidden: "ARIA Hidden",
       landmarks: "Layout & Landmarks",

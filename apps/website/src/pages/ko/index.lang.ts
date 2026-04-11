@@ -5,6 +5,7 @@ const dict = {
     description:
       "스크린 리더 등 보조 기술 사용자가 인식하는 정보를 Chrome과 Firefox에서 쉽게 확인할 수 있는 확장 프로그램입니다.",
     screenshotSrc: "/a11y-visualizer/images/screenshot_ko.png",
+    screenshotAlt: "Accessibility Visualizer를 사용 중인 브라우저의 스크린샷",
   },
   features: {
     title: "기능",

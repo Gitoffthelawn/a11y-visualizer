@@ -1,0 +1,164 @@
+---
+import CategoryTitle from "./CategoryTitle.astro";
+import CategorySectionTitle from "./CategorySectionTitle.astro";
+import ExampleCard from "./ExampleCard.astro";
+import { createLocalT } from "../../lib/i18n";
+import { en, ja } from "./ListTests.lang";
+
+interface Props {
+  lang?: string;
+}
+const lang = (Astro.props as Props).lang || "en";
+const t = createLocalT(lang === "ja" ? ja : en, en);
+---
+
+<CategoryTitle id="lists">{t("title")}</CategoryTitle>
+<p class="text-zinc-700 dark:text-zinc-300 mb-6">{t("intro")}</p>
+
+<!-- Unordered Lists -->
+<CategorySectionTitle id="unordered-lists"
+  >{t("sections.unorderedLists.title")}</CategorySectionTitle
+>
+
+<ExampleCard
+  title={t("examples.unorderedLists.proper.title")}
+  description={t("examples.unorderedLists.proper.desc")}
+>
+  <ul>
+    <li>Apple</li>
+    <li>Banana</li>
+    <li>Cherry</li>
+  </ul>
+</ExampleCard>
+
+<ExampleCard
+  title={t("examples.unorderedLists.divWrapped.title")}
+  description={t("examples.unorderedLists.divWrapped.desc")}
+>
+  <ul>
+    <div>
+      <li>Apple</li>
+      <li>Banana</li>
+      <li>Cherry</li>
+    </div>
+  </ul>
+</ExampleCard>
+
+<!-- Ordered Lists -->
+<CategorySectionTitle id="ordered-lists"
+  >{t("sections.orderedLists.title")}</CategorySectionTitle
+>
+
+<ExampleCard
+  title={t("examples.orderedLists.proper.title")}
+  description={t("examples.orderedLists.proper.desc")}
+>
+  <ol>
+    <li>First step</li>
+    <li>Second step</li>
+    <li>Third step</li>
+  </ol>
+</ExampleCard>
+
+<!-- Definition Lists -->
+<CategorySectionTitle id="definition-lists"
+  >{t("sections.definitionLists.title")}</CategorySectionTitle
+>
+
+<ExampleCard
+  title={t("examples.definitionLists.proper.title")}
+  description={t("examples.definitionLists.proper.desc")}
+>
+  <dl>
+    <dt class="font-bold">HTML</dt>
+    <dd>HyperText Markup Language</dd>
+    <dt class="font-bold">CSS</dt>
+    <dd>Cascading Style Sheets</dd>
+  </dl>
+</ExampleCard>
+
+<ExampleCard
+  title={t("examples.definitionLists.multipleDd.title")}
+  description={t("examples.definitionLists.multipleDd.desc")}
+>
+  <dl>
+    <dt class="font-bold">Color</dt>
+    <dd>Red</dd>
+    <dd>Blue</dd>
+    <dd>Green</dd>
+  </dl>
+</ExampleCard>
+
+<ExampleCard
+  title={t("examples.definitionLists.divGrouped.title")}
+  description={t("examples.definitionLists.divGrouped.desc")}
+>
+  <dl>
+    <div>
+      <dt class="font-bold">HTML</dt>
+      <dd>HyperText Markup Language</dd>
+    </div>
+    <div>
+      <dt class="font-bold">CSS</dt>
+      <dd>Cascading Style Sheets</dd>
+    </div>
+  </dl>
+</ExampleCard>
+
+<ExampleCard
+  title={t("examples.definitionLists.invalidChild.title")}
+  description={t("examples.definitionLists.invalidChild.desc")}
+>
+  <dl>
+    <dt class="font-bold">Term</dt>
+    <dd>Description</dd>
+    <span>Invalid child element</span>
+  </dl>
+</ExampleCard>
+
+<ExampleCard
+  title={t("examples.definitionLists.outsideDl.title")}
+  description={t("examples.definitionLists.outsideDl.desc")}
+>
+  <dt class="font-bold">Orphaned term</dt>
+  <dd>Orphaned description</dd>
+</ExampleCard>
+
+<!-- Menu -->
+<CategorySectionTitle id="menu-element"
+  >{t("sections.menu.title")}</CategorySectionTitle
+>
+
+<ExampleCard
+  title={t("examples.menu.proper.title")}
+  description={t("examples.menu.proper.desc")}
+>
+  <menu>
+    <li>Action 1</li>
+    <li>Action 2</li>
+    <li>Action 3</li>
+  </menu>
+</ExampleCard>
+
+<!-- ARIA List Roles -->
+<CategorySectionTitle id="aria-list-roles"
+  >{t("sections.ariaListRoles.title")}</CategorySectionTitle
+>
+
+<ExampleCard
+  title={t("examples.ariaListRoles.proper.title")}
+  description={t("examples.ariaListRoles.proper.desc")}
+>
+  <div role="list">
+    <div role="listitem">Item A</div>
+    <div role="listitem">Item B</div>
+    <div role="listitem">Item C</div>
+  </div>
+</ExampleCard>
+
+<ExampleCard
+  title={t("examples.ariaListRoles.orphanedListitem.title")}
+  description={t("examples.ariaListRoles.orphanedListitem.desc")}
+>
+  <div role="listitem">Orphaned list item</div>
+</ExampleCard>

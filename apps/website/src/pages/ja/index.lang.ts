@@ -5,6 +5,8 @@ const dict = {
     description:
       "スクリーンリーダーなどの支援技術のユーザーが知覚している情報を、ChromeやFirefoxで簡単に確認できる拡張機能です。",
     screenshotSrc: "/a11y-visualizer/images/screenshot_ja.png",
+    screenshotAlt:
+      "Accessibility Visualizerを使用しているブラウザのスクリーンショット",
   },
   features: {
     title: "機能",
