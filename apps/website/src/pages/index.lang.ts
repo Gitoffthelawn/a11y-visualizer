@@ -5,6 +5,7 @@ const dict = {
     description:
       "A browser extension that lets you easily view information perceived by users of assistive technologies like screen readers, directly in Chrome and Firefox.",
     screenshotSrc: "/a11y-visualizer/images/screenshot_en.png",
+    screenshotAlt: "Screenshot of a browser using Accessibility Visualizer",
   },
   features: {
     title: "Features",
