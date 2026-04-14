@@ -44,7 +44,9 @@
     "displaySettings": "表示設定",
     "displayCustomization": "表示のカスタマイズ",
     "uncheckAll": "すべて外す",
-    "hideOutOfSightElementTips": "視覚的に隠されている要素を非表示"
+    "hideOutOfSightElementTips": "視覚的に隠されている要素を非表示",
+    "showKeystrokes": "キーボード操作を表示",
+    "keystrokeDisplaySeconds": "キーボード操作の表示秒数"
   },
   "presets": {
     "basic": "基本",

@@ -351,6 +351,15 @@ export const SettingsEditor = ({
                 {t("settings.announceLiveRegions")}
               </span>
             </Checkbox>
+            <Checkbox
+              onChange={(e) => {
+                handleChangeCheckbox("showKeystrokes", e);
+              }}
+              checked={settings.showKeystrokes}
+              disabled={disabled}
+            >
+              <span className="text-sm">{t("settings.showKeystrokes")}</span>
+            </Checkbox>
           </div>
         </div>
         <div className="px-2">
@@ -574,6 +583,26 @@ const DisplaySettingsSection = ({
           </label>
         </fieldset>
       </div>
+      <label className="flex flex-row gap-2 items-center justify-between px-2">
+        <span className="shrink text-sm">
+          {t("settings.keystrokeDisplaySeconds")}
+        </span>
+        <input
+          className="border-zinc-400 border-solid border rounded-md
+                py-0.5 px-1 text-sm text-right w-14 h-6
+                bg-white dark:bg-zinc-800
+                text-zinc-800 dark:text-zinc-300
+                disabled:opacity-60
+                "
+          type="number"
+          value={settings.keystrokeDisplaySeconds}
+          onChange={(e) => handleChangeNumber("keystrokeDisplaySeconds", e)}
+          min={1}
+          max={30}
+          step={1}
+          disabled={disabled || !settings.showKeystrokes}
+        />
+      </label>
     </div>
   );
 

@@ -44,7 +44,9 @@
     "displaySettings": "표시 설정",
     "displayCustomization": "표시 커스터마이징",
     "uncheckAll": "모두 선택 해제",
-    "hideOutOfSightElementTips": "시각적으로 가려진 요소 표시 안함"
+    "hideOutOfSightElementTips": "시각적으로 가려진 요소 표시 안함",
+    "showKeystrokes": "키보드 조작 표시",
+    "keystrokeDisplaySeconds": "키보드 조작 표시 시간(초)"
   },
   "presets": {
     "basic": "기본",

@@ -2,9 +2,11 @@ import React from "react";
 import { createPortal } from "react-dom";
 import { Announcements } from "./components/Announcements";
 import { ElementList } from "./components/ElementList";
+import { Keystrokes } from "./components/Keystrokes";
 import { SettingsContext } from "./contexts/SettingsContext";
 import { useDebouncedCallback } from "./hooks/useDebouncedCallback";
 import { useElementMeta } from "./hooks/useElementMeta";
+import { useKeystrokes } from "./hooks/useKeystrokes";
 import { useLiveRegion } from "./hooks/useLiveRegion";
 import { injectRoot } from "./injectRoot";
 
@@ -84,6 +86,7 @@ export const Root = ({
     iframeElements,
     renderType: options?.renderType,
   });
+  const keystrokes = useKeystrokes({ parentRef, iframeElements });
   const { metaList, width, height, topLayers, iframeLayers, updateMetaList } =
     useElementMeta({
       parentRef,
@@ -229,6 +232,7 @@ export const Root = ({
       {settings.showLiveRegions && announceMode === "self" && (
         <Announcements announcements={announcements} />
       )}
+      {settings.showKeystrokes && <Keystrokes keystrokes={keystrokes} />}
     </section>
   );
 };

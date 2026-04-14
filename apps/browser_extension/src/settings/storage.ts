@@ -103,6 +103,14 @@ function migrateLegacySettings(settings: unknown): Settings {
       : initialSettings.activeTipOpacityPercent;
   }
 
+  if (typeof newSettings.showKeystrokes === "undefined") {
+    newSettings.showKeystrokes = initialSettings.showKeystrokes;
+  }
+  if (typeof newSettings.keystrokeDisplaySeconds === "undefined") {
+    newSettings.keystrokeDisplaySeconds =
+      initialSettings.keystrokeDisplaySeconds;
+  }
+
   return newSettings;
 }
 

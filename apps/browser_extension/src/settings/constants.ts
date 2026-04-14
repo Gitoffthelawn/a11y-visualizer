@@ -46,4 +46,6 @@ export const initialSettings: Settings = {
     presetId: "basic",
   },
   language: "auto",
+  showKeystrokes: false,
+  keystrokeDisplaySeconds: 3,
 } as const;

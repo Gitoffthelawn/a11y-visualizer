@@ -1,0 +1,43 @@
+.KeystrokesList {
+  position: fixed;
+  top: 8px;
+  right: 8px;
+  z-index: 2147483647;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+.Keystroke {
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 18px;
+  line-height: 1.4;
+  white-space: nowrap;
+  animation: keystrokeFadeIn 0.1s ease-out;
+}
+
+.Keystroke kbd {
+  font-family: system-ui, sans-serif;
+  font-size: inherit;
+}
+
+@keyframes keystrokeFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

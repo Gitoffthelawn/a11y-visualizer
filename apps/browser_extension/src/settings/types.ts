@@ -42,6 +42,8 @@ export type Settings = {
   liveRegionFontSize: number;
   elementTypeMode: ElementTypeMode;
   language: SupportedLanguage;
+  showKeystrokes: boolean;
+  keystrokeDisplaySeconds: number;
 };
 
 export type SettingsMessage =
