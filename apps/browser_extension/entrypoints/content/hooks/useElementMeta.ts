@@ -6,6 +6,7 @@ import {
 } from "../../../src/settings";
 import { SettingsContext } from "../contexts/SettingsContext";
 import { collectElements } from "../dom";
+import { getRootSize } from "../dom/getRootSize";
 import type { ElementMeta } from "../types";
 
 type Layer = {
@@ -26,17 +27,16 @@ const collectTopLayers = (
   const layers: Layer[] = elements
     .map((element: Element): Layer | null => {
       if (container?.contains(element)) return null;
-      const { elements, rootHeight, rootWidth } = collectElements(
-        element,
-        [],
-        categorySettings,
-        { srcdoc, hideOutOfSightElementTips },
-      );
+      const metaList = collectElements(element, [], categorySettings, {
+        srcdoc,
+        hideOutOfSightElementTips,
+      });
+      const { width, height } = getRootSize(element);
       return {
         element,
-        metaList: elements,
-        width: rootWidth,
-        height: rootHeight,
+        metaList,
+        width,
+        height,
       };
     })
     .filter((el): el is Layer => !!el);
@@ -56,20 +56,16 @@ const collectIFrames = (
         const d = iframeWindow.document;
         const { readyState } = d;
         if (readyState === "complete") {
-          const { elements, rootHeight, rootWidth } = collectElements(
-            d.body,
-            [],
-            categorySettings,
-            {
-              srcdoc: iframe.hasAttribute("srcdoc"),
-              hideOutOfSightElementTips,
-            },
-          );
+          const metaList = collectElements(d.body, [], categorySettings, {
+            srcdoc: iframe.hasAttribute("srcdoc"),
+            hideOutOfSightElementTips,
+          });
+          const { width, height } = getRootSize(d.body);
           return {
             element: d.body,
-            metaList: elements,
-            width: rootWidth,
-            height: rootHeight,
+            metaList,
+            width,
+            height,
           };
         }
       } catch {
@@ -91,8 +87,6 @@ export const useElementMeta = ({
   const [metaList, setMetaList] = React.useState<ElementMeta[]>([]);
   const [topLayers, setTopLayers] = React.useState<Layer[]>([]);
   const [iframeLayers, setIframeLayers] = React.useState<Layer[]>([]);
-  const [width, setWidth] = React.useState<number>(0);
-  const [height, setHeight] = React.useState<number>(0);
   const settings = React.useContext(SettingsContext);
 
   const updateMetaList = React.useCallback(
@@ -100,8 +94,6 @@ export const useElementMeta = ({
       if (!containerRef.current) return;
       if (!parentRef.current) return;
       if (!settings.accessibilityInfo) {
-        setWidth(0);
-        setHeight(0);
         setMetaList([]);
         setIframeLayers([]);
         setTopLayers([]);
@@ -132,7 +124,7 @@ export const useElementMeta = ({
         ),
       );
 
-      const { elements, rootHeight, rootWidth } = collectElements(
+      const elements = collectElements(
         parentRef.current,
         [containerRef.current, ...topLayers.map((e) => e.element)].filter(
           (el): el is Element => !!el,
@@ -144,8 +136,6 @@ export const useElementMeta = ({
         },
       );
       setMetaList(elements);
-      setWidth(rootWidth);
-      setHeight(rootHeight);
 
       containerRef.current.style.display = display;
     },
@@ -154,8 +144,6 @@ export const useElementMeta = ({
 
   return {
     metaList,
-    width,
-    height,
     topLayers,
     iframeLayers,
     updateMetaList,

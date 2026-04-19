@@ -13,20 +13,15 @@ let nextId = 0;
 
 export const useKeystrokes = ({
   parentRef,
-  iframeElements,
+  iframeElementsRef,
 }: {
   parentRef: React.RefObject<Element>;
-  iframeElements: HTMLIFrameElement[];
+  iframeElementsRef: React.MutableRefObject<HTMLIFrameElement[]>;
 }) => {
   const { showKeystrokes, keystrokeDisplaySeconds } =
     React.useContext(SettingsContext);
   const [keystrokes, setKeystrokes] = React.useState<KeystrokeItem[]>([]);
-  const iframeElementsRef = React.useRef(iframeElements);
   const keystrokeDisplaySecondsRef = React.useRef(keystrokeDisplaySeconds);
-
-  React.useEffect(() => {
-    iframeElementsRef.current = iframeElements;
-  }, [iframeElements]);
 
   React.useEffect(() => {
     keystrokeDisplaySecondsRef.current = keystrokeDisplaySeconds;
@@ -91,7 +86,7 @@ export const useKeystrokes = ({
     return () => {
       removeListeners(windows);
     };
-  }, [showKeystrokes, parentRef]);
+  }, [showKeystrokes, parentRef, iframeElementsRef]);
 
   return keystrokes;
 };

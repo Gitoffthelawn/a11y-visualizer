@@ -74,11 +74,11 @@ const isBusy = (el: Element): boolean => {
 
 export const useLiveRegion = ({
   parentRef,
-  iframeElements,
+  iframeElementsRef,
   renderType,
 }: {
   parentRef: React.RefObject<Element>;
-  iframeElements: HTMLIFrameElement[];
+  iframeElementsRef: React.MutableRefObject<HTMLIFrameElement[]>;
   renderType?: "initial" | "enabled" | "visibilitychange";
 }) => {
   const {
@@ -260,7 +260,7 @@ export const useLiveRegion = ({
       if (!liveRegionObserverRef.current) {
         return;
       }
-      const liveRegions = getLiveRegions(el, iframeElements);
+      const liveRegions = getLiveRegions(el, iframeElementsRef.current);
       [...liveRegions].forEach((el) => {
         if (
           liveRegionObserverRef.current &&
@@ -271,7 +271,7 @@ export const useLiveRegion = ({
       });
       liveRegionsRef.current = Array.from(liveRegions);
     },
-    [connectLiveRegion, iframeElements],
+    [connectLiveRegion, iframeElementsRef],
   );
   React.useEffect(() => {
     if (!showLiveRegions) {
@@ -414,7 +414,7 @@ export const useLiveRegion = ({
     const w = parentRef.current?.ownerDocument?.defaultView;
     const windows = [
       w,
-      ...iframeElements.map((iframe) => iframe.contentWindow),
+      ...iframeElementsRef.current.map((iframe) => iframe.contentWindow),
     ];
     const keyListener = (e: KeyboardEvent) => {
       if (e.key === "Shift") {
@@ -454,7 +454,7 @@ export const useLiveRegion = ({
   }, [
     announcements,
     clearAnnouncements,
-    iframeElements,
+    iframeElementsRef,
     parentRef,
     pauseOrResumeAnnouncements,
     pausedAnnouncements,

@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { createPortal } from "react-dom";
 import { Announcements } from "./components/Announcements";
 import { ElementList } from "./components/ElementList";
 import { Keystrokes } from "./components/Keystrokes";
 import { SettingsContext } from "./contexts/SettingsContext";
+import { getRootSize } from "./dom/getRootSize";
 import { useDebouncedCallback } from "./hooks/useDebouncedCallback";
 import { useElementMeta } from "./hooks/useElementMeta";
 import { useKeystrokes } from "./hooks/useKeystrokes";
@@ -78,21 +79,21 @@ export const Root = ({
   const settings = React.useContext(SettingsContext);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const framesRef = React.useRef<Element[]>([]);
-  const [iframeElements, setIframeElements] = React.useState<
-    HTMLIFrameElement[]
-  >([]);
+  const iframeElementsRef = React.useRef<HTMLIFrameElement[]>([]);
+
   const { announcements, observeLiveRegion } = useLiveRegion({
     parentRef,
-    iframeElements,
+    iframeElementsRef,
     renderType: options?.renderType,
   });
-  const keystrokes = useKeystrokes({ parentRef, iframeElements });
-  const { metaList, width, height, topLayers, iframeLayers, updateMetaList } =
-    useElementMeta({
-      parentRef,
-      containerRef,
-      srcdoc,
-    });
+  const keystrokes = useKeystrokes({ parentRef, iframeElementsRef });
+  const { metaList, topLayers, iframeLayers, updateMetaList } = useElementMeta({
+    parentRef,
+    containerRef,
+    srcdoc,
+  });
+  const [width, setWidth] = useState(0);
+  const [height, setHeight] = useState(0);
 
   const [outdated, setOutDated] = React.useState(false);
 
@@ -103,7 +104,7 @@ export const Root = ({
       if (!containerRef.current) return;
       if (!parentRef.current) return;
       const iframeElements = getIframeElements(parentRef.current);
-      setIframeElements(iframeElements);
+      iframeElementsRef.current = iframeElements;
 
       framesRef.current = injectToFrames(
         parentRef.current,
@@ -122,13 +123,25 @@ export const Root = ({
     200,
     [injectToFrames, settings, observeLiveRegion],
   );
+
+  const updateSize = useDebouncedCallback(
+    () => {
+      const { width, height } = getRootSize(parentRef.current);
+      setWidth(width);
+      setHeight(height);
+      updateInfo();
+    },
+    200,
+    [parentRef, updateInfo],
+  );
+
   React.useEffect(() => {
     if (outdated) updateInfo();
   }, [updateInfo, outdated]);
 
   React.useEffect(() => {
-    updateInfo();
-    const observer = new MutationObserver(updateInfo);
+    updateSize();
+    const observer = new MutationObserver(updateSize);
     const childrenObserver = new MutationObserver((records) => {
       records.forEach((record) => {
         record.addedNodes.forEach((node) => {
@@ -161,9 +174,10 @@ export const Root = ({
       childrenObserver.disconnect();
       observer.disconnect();
     };
-  }, [parentRef, updateInfo]);
+  }, [parentRef, updateSize]);
 
   React.useEffect(() => {
+    const resizeEvents = ["resize"];
     const events = [
       "resize",
       "scroll",
@@ -177,10 +191,19 @@ export const Root = ({
     const w = parentRef.current?.ownerDocument?.defaultView;
     const windows = [
       w,
-      ...iframeElements.map((iframe) => iframe.ownerDocument?.defaultView),
+      ...iframeElementsRef.current.map(
+        (iframe) => iframe.ownerDocument?.defaultView,
+      ),
     ];
     windows.forEach((w) => {
       if (!w) return;
+      resizeEvents.forEach((event) => {
+        try {
+          w.addEventListener(event, updateSize);
+        } catch {
+          /* noop */
+        }
+      });
       events.forEach((event) => {
         try {
           w.addEventListener(event, updateInfo);
@@ -192,6 +215,13 @@ export const Root = ({
     return () => {
       windows.forEach((w) => {
         if (!w) return;
+        resizeEvents.forEach((event) => {
+          try {
+            w.removeEventListener(event, updateSize);
+          } catch {
+            /* noop */
+          }
+        });
         events.forEach((event) => {
           try {
             w.removeEventListener(event, updateInfo);
@@ -201,7 +231,7 @@ export const Root = ({
         });
       });
     };
-  }, [iframeElements, parentRef, updateInfo]);
+  }, [parentRef, updateInfo, updateSize]);
 
   return (
     <section

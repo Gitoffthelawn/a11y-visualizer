@@ -41,31 +41,11 @@ export const collectElements = (
     srcdoc?: boolean;
     hideOutOfSightElementTips?: boolean;
   } = {},
-): {
-  elements: ElementMeta[];
-  rootWidth: number;
-  rootHeight: number;
-} => {
+): ElementMeta[] => {
   const d = root.ownerDocument;
   const w = d.defaultView;
-  if (!d || !w) return { elements: [], rootWidth: 0, rootHeight: 0 };
+  if (!d || !w) return [];
   const rootTagName = root.tagName.toLowerCase();
-  const rootWidth =
-    rootTagName === "body"
-      ? Math.max(
-          d.documentElement.offsetWidth,
-          d.documentElement.scrollWidth,
-          root.scrollWidth,
-        )
-      : root.scrollWidth;
-  const rootHeight =
-    rootTagName === "body"
-      ? Math.max(
-          d.documentElement.offsetHeight,
-          d.documentElement.scrollHeight,
-          root.scrollHeight,
-        )
-      : root.scrollHeight;
   const positionBaseElement = getPositionBaseElement(root, d, w);
 
   const offsetPosition = positionBaseElement
@@ -88,94 +68,90 @@ export const collectElements = (
   const modals = [...detectModals(root), ...shadowRoots.flatMap(detectModals)];
   const hasActiveModals = modals.length > 0;
 
-  return {
-    rootHeight,
-    rootWidth,
-    elements: [
-      ...(settings.page && rootTagName === "body" ? [root] : []),
-      ...(selector && root.matches(selector) ? [root] : []),
-      ...(selector ? [...root.querySelectorAll(selector)] : []),
-      // Shadow DOM内の要素も収集
-      ...shadowRoots.flatMap((shadowRoot) =>
-        selector ? [...shadowRoot.querySelectorAll(selector)] : [],
-      ),
-    ]
-      .filter((el) => !isHidden(el))
-      .filter((el) => !excludes.some((exclude) => exclude.contains(el)))
-      .filter((el) => {
-        // モーダルが表示されている場合、モーダル外の要素を非表示にする
-        if (hasActiveModals) {
-          return modals.some((modal) => modal.contains(el) || modal === el);
-        }
-        return true;
-      })
-      .filter((el) => {
-        // 視覚的に見えない要素のフィルタリング
-        if (options.hideOutOfSightElementTips) {
-          return !isOutOfSight(el, excludes);
-        }
-        return true;
-      })
-      .map((el: Element) => {
-        const scrollBaseElement = getScrollBaseElement(el, d, w);
-        const scrollBasePosition = scrollBaseElement
-          ? getElementPosition(scrollBaseElement, w, 0, 0)
+  return [
+    ...(settings.page && rootTagName === "body" ? [root] : []),
+    ...(selector && root.matches(selector) ? [root] : []),
+    ...(selector ? [...root.querySelectorAll(selector)] : []),
+    // Shadow DOM内の要素も収集
+    ...shadowRoots.flatMap((shadowRoot) =>
+      selector ? [...shadowRoot.querySelectorAll(selector)] : [],
+    ),
+  ]
+    .filter((el) => !isHidden(el))
+    .filter((el) => !excludes.some((exclude) => exclude.contains(el)))
+    .filter((el) => {
+      // モーダルが表示されている場合、モーダル外の要素を非表示にする
+      if (hasActiveModals) {
+        return modals.some((modal) => modal.contains(el) || modal === el);
+      }
+      return true;
+    })
+    .filter((el) => {
+      // 視覚的に見えない要素のフィルタリング
+      if (options.hideOutOfSightElementTips) {
+        return !isOutOfSight(el, excludes);
+      }
+      return true;
+    })
+    .map((el: Element) => {
+      const scrollBaseElement = getScrollBaseElement(el, d, w);
+      const scrollBasePosition = scrollBaseElement
+        ? getElementPosition(scrollBaseElement, w, 0, 0)
+        : undefined;
+      const elementPosition = getElementPosition(el, w, offsetX, offsetY);
+      if (
+        elementPosition.absoluteX + elementPosition.width < visibleX ||
+        elementPosition.absoluteY + elementPosition.height < visibleY ||
+        elementPosition.absoluteX > visibleX + visibleWidth ||
+        elementPosition.absoluteY > visibleY + visibleHeight
+      ) {
+        return null;
+      }
+      if (
+        scrollBasePosition &&
+        (elementPosition.absoluteX + elementPosition.width <
+          scrollBasePosition.absoluteX ||
+          elementPosition.absoluteY + elementPosition.height <
+            scrollBasePosition.absoluteY ||
+          elementPosition.absoluteX >
+            scrollBasePosition.absoluteX + scrollBasePosition.width ||
+          elementPosition.absoluteY >
+            scrollBasePosition.absoluteY + scrollBasePosition.height)
+      ) {
+        return null;
+      }
+      const role = getKnownRole(el);
+      const name = computeAccessibleName(el);
+      const rects = Array.from(el.getClientRects()).map((rect) => ({
+        relativeX: rect.x - elementPosition.x + visibleX - offsetX,
+        relativeY: rect.y - elementPosition.y + visibleY - offsetY,
+        width: rect.width,
+        height: rect.height,
+      }));
+
+      const ruleResults = Rules.reduce<RuleResult[]>((prev, rule) => {
+        const result = isRuleTargetElement(el, rule, role)
+          ? rule.evaluate(el, rule.defaultOptions, {
+              tables: internalTables,
+              elementDocument: d,
+              elementWindow: w,
+              name,
+              role,
+              srcdoc: options.srcdoc,
+              shadowRoots,
+            })
           : undefined;
-        const elementPosition = getElementPosition(el, w, offsetX, offsetY);
-        if (
-          elementPosition.absoluteX + elementPosition.width < visibleX ||
-          elementPosition.absoluteY + elementPosition.height < visibleY ||
-          elementPosition.absoluteX > visibleX + visibleWidth ||
-          elementPosition.absoluteY > visibleY + visibleHeight
-        ) {
-          return null;
-        }
-        if (
-          scrollBasePosition &&
-          (elementPosition.absoluteX + elementPosition.width <
-            scrollBasePosition.absoluteX ||
-            elementPosition.absoluteY + elementPosition.height <
-              scrollBasePosition.absoluteY ||
-            elementPosition.absoluteX >
-              scrollBasePosition.absoluteX + scrollBasePosition.width ||
-            elementPosition.absoluteY >
-              scrollBasePosition.absoluteY + scrollBasePosition.height)
-        ) {
-          return null;
-        }
-        const role = getKnownRole(el);
-        const name = computeAccessibleName(el);
-        const rects = Array.from(el.getClientRects()).map((rect) => ({
-          relativeX: rect.x - elementPosition.x + visibleX - offsetX,
-          relativeY: rect.y - elementPosition.y + visibleY - offsetY,
-          width: rect.width,
-          height: rect.height,
-        }));
+        return result ? prev.concat(result) : prev;
+      }, []);
 
-        const ruleResults = Rules.reduce<RuleResult[]>((prev, rule) => {
-          const result = isRuleTargetElement(el, rule, role)
-            ? rule.evaluate(el, rule.defaultOptions, {
-                tables: internalTables,
-                elementDocument: d,
-                elementWindow: w,
-                name,
-                role,
-                srcdoc: options.srcdoc,
-                shadowRoots,
-              })
-            : undefined;
-          return result ? prev.concat(result) : prev;
-        }, []);
-
-        return {
-          ...elementPosition,
-          rects,
-          name: name || "",
-          category: getElementCategory(el, role),
-          ruleResults,
-        };
-      })
-      .filter((el): el is ElementMeta => el !== null)
-      .filter((el) => el.ruleResults.length > 0),
-  };
+      return {
+        ...elementPosition,
+        rects,
+        name: name || "",
+        category: getElementCategory(el, role),
+        ruleResults,
+      };
+    })
+    .filter((el): el is ElementMeta => el !== null)
+    .filter((el) => el.ruleResults.length > 0);
 };
