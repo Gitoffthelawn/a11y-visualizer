@@ -40,6 +40,10 @@ export const collectElements = (
   options: {
     srcdoc?: boolean;
     hideOutOfSightElementTips?: boolean;
+    viewportScrollX?: number;
+    viewportScrollY?: number;
+    viewportWidth?: number;
+    viewportHeight?: number;
   } = {},
 ): ElementMeta[] => {
   const d = root.ownerDocument;
@@ -53,10 +57,10 @@ export const collectElements = (
     : { x: 0, y: 0 };
   const offsetX = offsetPosition.x;
   const offsetY = offsetPosition.y;
-  const visibleX = w.scrollX;
-  const visibleY = w.scrollY;
-  const visibleWidth = w.innerWidth;
-  const visibleHeight = w.innerHeight;
+  const visibleX = options.viewportScrollX ?? w.scrollX;
+  const visibleY = options.viewportScrollY ?? w.scrollY;
+  const visibleWidth = options.viewportWidth ?? w.innerWidth;
+  const visibleHeight = options.viewportHeight ?? w.innerHeight;
 
   const selector = getSelector(settings);
   const internalTables: Table[] = [];

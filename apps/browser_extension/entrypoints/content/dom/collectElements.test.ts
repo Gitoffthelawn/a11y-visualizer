@@ -97,6 +97,34 @@ describe("collectElements()", () => {
     expect(result).toHaveLength(1);
   });
 
+  describe("viewport options", () => {
+    test("viewportScrollX, viewportScrollY, viewportWidth, viewportHeight が指定された場合、window のプロパティの代わりに使用される", () => {
+      document.body.innerHTML = `
+        <img src="test.jpg" alt="Test image">
+      `;
+      const result = collectElements(
+        document.body,
+        [],
+        { image: true },
+        {
+          viewportScrollX: 0,
+          viewportScrollY: 0,
+          viewportWidth: 800,
+          viewportHeight: 600,
+        },
+      );
+      expect(result).toHaveLength(1);
+    });
+
+    test("viewport options が未指定の場合、window のプロパティが使用される", () => {
+      document.body.innerHTML = `
+        <img src="test.jpg" alt="Test image">
+      `;
+      const result = collectElements(document.body, [], { image: true }, {});
+      expect(result).toHaveLength(1);
+    });
+  });
+
   describe("hideOutOfSightElementTips option", () => {
     beforeEach(() => {
       // モックをクリア

@@ -81,6 +81,13 @@ export const Root = ({
   const framesRef = React.useRef<Element[]>([]);
   const iframeElementsRef = React.useRef<HTMLIFrameElement[]>([]);
 
+  const [width, setWidth] = useState(0);
+  const [height, setHeight] = useState(0);
+  const viewportWidthRef = React.useRef(0);
+  const viewportHeightRef = React.useRef(0);
+  const viewportScrollXRef = React.useRef(0);
+  const viewportScrollYRef = React.useRef(0);
+
   const { announcements, observeLiveRegion } = useLiveRegion({
     parentRef,
     iframeElementsRef,
@@ -91,9 +98,11 @@ export const Root = ({
     parentRef,
     containerRef,
     srcdoc,
+    viewportScrollXRef,
+    viewportScrollYRef,
+    viewportWidthRef,
+    viewportHeightRef,
   });
-  const [width, setWidth] = useState(0);
-  const [height, setHeight] = useState(0);
 
   const [outdated, setOutDated] = React.useState(false);
 
@@ -129,10 +138,32 @@ export const Root = ({
       const { width, height } = getRootSize(parentRef.current);
       setWidth(width);
       setHeight(height);
-      updateInfo();
+      const w = parentRef.current?.ownerDocument.defaultView;
+      viewportWidthRef.current = w?.innerWidth ?? viewportWidthRef.current;
+      viewportHeightRef.current = w?.innerHeight ?? viewportHeightRef.current;
     },
     200,
     [parentRef, updateInfo],
+  );
+
+  const updateScroll = useDebouncedCallback(
+    () => {
+      const w = parentRef.current?.ownerDocument.defaultView;
+      viewportScrollXRef.current = w?.scrollX ?? viewportScrollXRef.current;
+      viewportScrollYRef.current = w?.scrollY ?? viewportScrollYRef.current;
+    },
+    200,
+    [parentRef, updateInfo],
+  );
+
+  const updateAll = useDebouncedCallback(
+    () => {
+      updateSize();
+      updateScroll();
+      updateInfo();
+    },
+    200,
+    [parentRef, updateInfo, updateSize, updateScroll],
   );
 
   React.useEffect(() => {
@@ -140,8 +171,8 @@ export const Root = ({
   }, [updateInfo, outdated]);
 
   React.useEffect(() => {
-    updateSize();
-    const observer = new MutationObserver(updateSize);
+    updateAll();
+    const observer = new MutationObserver(updateAll);
     const childrenObserver = new MutationObserver((records) => {
       records.forEach((record) => {
         record.addedNodes.forEach((node) => {
@@ -174,12 +205,12 @@ export const Root = ({
       childrenObserver.disconnect();
       observer.disconnect();
     };
-  }, [parentRef, updateSize]);
+  }, [parentRef, updateAll]);
 
   React.useEffect(() => {
     const resizeEvents = ["resize"];
+    const scrollEvents = ["scroll"];
     const events = [
-      "resize",
       "scroll",
       "keydown",
       "mousedown",
@@ -187,6 +218,15 @@ export const Root = ({
       "mousewheel",
       "change",
     ];
+
+    const onScroll = () => {
+      updateScroll();
+      updateInfo();
+    };
+    const onResize = () => {
+      updateSize();
+      updateInfo();
+    };
 
     const w = parentRef.current?.ownerDocument?.defaultView;
     const windows = [
@@ -199,7 +239,14 @@ export const Root = ({
       if (!w) return;
       resizeEvents.forEach((event) => {
         try {
-          w.addEventListener(event, updateSize);
+          w.addEventListener(event, onResize);
+        } catch {
+          /* noop */
+        }
+      });
+      scrollEvents.forEach((event) => {
+        try {
+          w.addEventListener(event, onScroll);
         } catch {
           /* noop */
         }
@@ -212,12 +259,20 @@ export const Root = ({
         }
       });
     });
+
     return () => {
       windows.forEach((w) => {
         if (!w) return;
         resizeEvents.forEach((event) => {
           try {
-            w.removeEventListener(event, updateSize);
+            w.removeEventListener(event, onResize);
+          } catch {
+            /* noop */
+          }
+        });
+        scrollEvents.forEach((event) => {
+          try {
+            w.removeEventListener(event, onScroll);
           } catch {
             /* noop */
           }
@@ -231,7 +286,7 @@ export const Root = ({
         });
       });
     };
-  }, [parentRef, updateInfo, updateSize]);
+  }, [parentRef, updateInfo, updateSize, updateScroll]);
 
   return (
     <section

@@ -16,12 +16,20 @@ type Layer = {
   height: number;
 };
 
+type ViewportOptions = {
+  viewportScrollX?: number;
+  viewportScrollY?: number;
+  viewportWidth?: number;
+  viewportHeight?: number;
+};
+
 const collectTopLayers = (
   el: Element,
   container: Element | null,
   categorySettings: CategorySettings,
   srcdoc: boolean | undefined,
   hideOutOfSightElementTips: boolean | undefined,
+  viewportOptions?: ViewportOptions,
 ) => {
   const elements = [...el.querySelectorAll("dialog, [popover]")];
   const layers: Layer[] = elements
@@ -30,6 +38,7 @@ const collectTopLayers = (
       const metaList = collectElements(element, [], categorySettings, {
         srcdoc,
         hideOutOfSightElementTips,
+        ...viewportOptions,
       });
       const { width, height } = getRootSize(element);
       return {
@@ -79,10 +88,18 @@ export const useElementMeta = ({
   parentRef,
   containerRef,
   srcdoc,
+  viewportScrollXRef,
+  viewportScrollYRef,
+  viewportWidthRef,
+  viewportHeightRef,
 }: {
   parentRef: React.RefObject<Element>;
   containerRef: React.RefObject<HTMLElement>;
   srcdoc?: boolean;
+  viewportScrollXRef?: React.RefObject<number>;
+  viewportScrollYRef?: React.RefObject<number>;
+  viewportWidthRef?: React.RefObject<number>;
+  viewportHeightRef?: React.RefObject<number>;
 }) => {
   const [metaList, setMetaList] = React.useState<ElementMeta[]>([]);
   const [topLayers, setTopLayers] = React.useState<Layer[]>([]);
@@ -105,6 +122,13 @@ export const useElementMeta = ({
         defaultCustomCategorySettings,
       );
 
+      const viewportOptions: ViewportOptions = {
+        viewportScrollX: viewportScrollXRef?.current ?? undefined,
+        viewportScrollY: viewportScrollYRef?.current ?? undefined,
+        viewportWidth: viewportWidthRef?.current ?? undefined,
+        viewportHeight: viewportHeightRef?.current ?? undefined,
+      };
+
       const display = containerRef.current.style.display;
       containerRef.current.style.display = "none";
 
@@ -114,6 +138,7 @@ export const useElementMeta = ({
         categorySettings,
         srcdoc,
         settings.hideOutOfSightElementTips,
+        viewportOptions,
       );
       setTopLayers(topLayers);
       setIframeLayers(
@@ -133,6 +158,7 @@ export const useElementMeta = ({
         {
           srcdoc,
           hideOutOfSightElementTips: settings.hideOutOfSightElementTips,
+          ...viewportOptions,
         },
       );
       setMetaList(elements);
