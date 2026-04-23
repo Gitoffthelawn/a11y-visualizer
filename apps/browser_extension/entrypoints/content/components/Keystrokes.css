@@ -12,6 +12,7 @@
   margin: 0;
   padding: 0;
   font-family: sans-serif;
+  opacity: 0.8
 }
 
 .Keystroke {
@@ -20,9 +21,11 @@
   padding: 4px 12px;
   border-radius: 6px;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  font-size: 18px;
+  font-size: 32px;
   line-height: 1.4;
+  text-align: center;
   white-space: nowrap;
+  min-width: calc(32px * 1.8);
   /* TODO: ちらつきが発生するためアニメーションをオフにしている */
   /* animation: keystrokeFadeIn 0.1s ease-out; */
 }
