@@ -19,12 +19,19 @@ const SPECIAL_KEY_MAP: Record<string, string> = {
 
 const MODIFIER_KEYS = new Set(["Control", "Alt", "Shift", "Meta"]);
 
+const isPasswordInput = (target: EventTarget | null | undefined): boolean => {
+  return (
+    !!target && target instanceof HTMLInputElement && target.type === "password"
+  );
+};
+
 export const formatKeyEvent = (event: {
   ctrlKey: boolean;
   altKey: boolean;
   shiftKey: boolean;
   metaKey: boolean;
   key: string;
+  target?: EventTarget | null;
 }): string => {
   const parts: string[] = [];
 
@@ -47,9 +54,14 @@ export const formatKeyEvent = (event: {
     return parts.join(" + ");
   }
 
+  const hasModifier = parts.length > 0;
   const keyDisplay =
     SPECIAL_KEY_MAP[event.key] ??
-    (event.key.length === 1 ? event.key.toUpperCase() : event.key);
+    (event.key.length === 1
+      ? !hasModifier && isPasswordInput(event.target)
+        ? "*"
+        : event.key.toUpperCase()
+      : event.key);
 
   parts.push(keyDisplay);
   return parts.join(" + ");

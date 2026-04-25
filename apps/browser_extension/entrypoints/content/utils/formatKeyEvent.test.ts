@@ -1,4 +1,4 @@
-import { describe, expect, test } from "vitest";
+import { afterEach, describe, expect, test } from "vitest";
 import { formatKeyEvent } from "./formatKeyEvent";
 
 const makeEvent = (
@@ -8,13 +8,15 @@ const makeEvent = (
     altKey = false,
     shiftKey = false,
     metaKey = false,
+    target,
   }: {
     ctrlKey?: boolean;
     altKey?: boolean;
     shiftKey?: boolean;
     metaKey?: boolean;
+    target?: EventTarget | null;
   } = {},
-) => ({ key, ctrlKey, altKey, shiftKey, metaKey });
+) => ({ key, ctrlKey, altKey, shiftKey, metaKey, target });
 
 describe("formatKeyEvent", () => {
   test("normal character key", () => {
@@ -97,5 +99,60 @@ describe("formatKeyEvent", () => {
     expect(
       formatKeyEvent(makeEvent("Shift", { ctrlKey: true, shiftKey: true })),
     ).toBe("Ctrl");
+  });
+
+  describe("password input masking", () => {
+    afterEach(() => {
+      document.body.innerHTML = "";
+    });
+
+    const createPasswordInput = () => {
+      const input = document.createElement("input");
+      input.type = "password";
+      document.body.appendChild(input);
+      return input;
+    };
+
+    const createTextInput = () => {
+      const input = document.createElement("input");
+      input.type = "text";
+      document.body.appendChild(input);
+      return input;
+    };
+
+    test("character key in password field is masked", () => {
+      const target = createPasswordInput();
+      expect(formatKeyEvent(makeEvent("a", { target }))).toBe("*");
+      expect(formatKeyEvent(makeEvent("1", { target }))).toBe("*");
+    });
+
+    test("special keys in password field are not masked", () => {
+      const target = createPasswordInput();
+      expect(formatKeyEvent(makeEvent("Enter", { target }))).toBe("Enter");
+      expect(formatKeyEvent(makeEvent("Tab", { target }))).toBe("Tab");
+      expect(formatKeyEvent(makeEvent("Backspace", { target }))).toBe(
+        "Backspace",
+      );
+      expect(formatKeyEvent(makeEvent("ArrowLeft", { target }))).toBe("←");
+    });
+
+    test("modifier combinations in password field are not masked", () => {
+      const target = createPasswordInput();
+      expect(formatKeyEvent(makeEvent("a", { ctrlKey: true, target }))).toBe(
+        "Ctrl + A",
+      );
+      expect(formatKeyEvent(makeEvent("c", { metaKey: true, target }))).toBe(
+        "Cmd + C",
+      );
+    });
+
+    test("character key in text field is not masked", () => {
+      const target = createTextInput();
+      expect(formatKeyEvent(makeEvent("a", { target }))).toBe("A");
+    });
+
+    test("character key without target is not masked", () => {
+      expect(formatKeyEvent(makeEvent("a"))).toBe("A");
+    });
   });
 });
