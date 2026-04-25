@@ -96,10 +96,10 @@ export const useElementMeta = ({
   parentRef: React.RefObject<Element>;
   containerRef: React.RefObject<HTMLElement>;
   srcdoc?: boolean;
-  viewportScrollXRef?: React.RefObject<number>;
-  viewportScrollYRef?: React.RefObject<number>;
-  viewportWidthRef?: React.RefObject<number>;
-  viewportHeightRef?: React.RefObject<number>;
+  viewportScrollXRef: React.RefObject<number>;
+  viewportScrollYRef: React.RefObject<number>;
+  viewportWidthRef: React.RefObject<number>;
+  viewportHeightRef: React.RefObject<number>;
 }) => {
   const [metaList, setMetaList] = React.useState<ElementMeta[]>([]);
   const [topLayers, setTopLayers] = React.useState<Layer[]>([]);
@@ -165,7 +165,16 @@ export const useElementMeta = ({
 
       containerRef.current.style.display = display;
     },
-    [containerRef, parentRef, settings, srcdoc],
+    [
+      containerRef,
+      parentRef,
+      settings,
+      srcdoc,
+      viewportScrollXRef,
+      viewportScrollYRef,
+      viewportWidthRef,
+      viewportHeightRef,
+    ],
   );
 
   return {
