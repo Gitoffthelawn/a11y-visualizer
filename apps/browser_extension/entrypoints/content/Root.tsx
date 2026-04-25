@@ -93,7 +93,7 @@ export const Root = ({
     iframeElementsRef,
     renderType: options?.renderType,
   });
-  const keystrokes = useKeystrokes({ parentRef, iframeElementsRef });
+  const { keystrokes, listenForKeyStrokes } = useKeystrokes({ parentRef });
   const { metaList, topLayers, iframeLayers, updateMetaList } = useElementMeta({
     parentRef,
     containerRef,
@@ -126,6 +126,7 @@ export const Root = ({
       observeLiveRegion(parentRef.current, {
         firstTime: firstTimeUpdateRef.current,
       });
+      listenForKeyStrokes({ iframeElements });
       updateMetaList(iframeElements);
       firstTimeUpdateRef.current = false;
     },

@@ -13,10 +13,8 @@ let nextId = 0;
 
 export const useKeystrokes = ({
   parentRef,
-  iframeElementsRef,
 }: {
   parentRef: React.RefObject<Element>;
-  iframeElementsRef: React.MutableRefObject<HTMLIFrameElement[]>;
 }) => {
   const { showKeystrokes, keystrokeDisplaySeconds } =
     React.useContext(SettingsContext);
@@ -27,66 +25,74 @@ export const useKeystrokes = ({
     keystrokeDisplaySecondsRef.current = keystrokeDisplaySeconds;
   }, [keystrokeDisplaySeconds]);
 
-  React.useEffect(() => {
-    if (!showKeystrokes) {
-      setKeystrokes([]);
-      return;
-    }
+  const handleKeydown = React.useCallback((e: KeyboardEvent) => {
+    const keys = formatKeyEvent(e);
+    const id = nextId++;
+    const timestamp = Date.now();
+    setKeystrokes((prev) =>
+      [{ id, keys, timestamp }, ...prev].slice(0, MAX_ITEMS),
+    );
 
-    const handleKeydown = (e: KeyboardEvent) => {
-      const keys = formatKeyEvent(e);
-      const id = nextId++;
-      const timestamp = Date.now();
-      setKeystrokes((prev) =>
-        [{ id, keys, timestamp }, ...prev].slice(0, MAX_ITEMS),
+    setTimeout(() => {
+      setKeystrokes((prev) => prev.filter((item) => item.id !== id));
+    }, keystrokeDisplaySecondsRef.current * 1000);
+  }, []);
+
+  const listeningWindowsRef = React.useRef<Window[]>([]);
+
+  const listenWindows = React.useCallback(
+    (windows: Window[]) => {
+      const removedWindows = listeningWindowsRef.current.filter(
+        (w) => !windows.includes(w),
       );
-
-      setTimeout(() => {
-        setKeystrokes((prev) => prev.filter((item) => item.id !== id));
-      }, keystrokeDisplaySecondsRef.current * 1000);
-    };
-
-    const addListeners = (windows: Window[]) => {
-      windows.forEach((w) => {
-        try {
-          w.addEventListener("keydown", handleKeydown, true);
-        } catch {
-          /* noop */
-        }
-      });
-    };
-
-    const removeListeners = (windows: Window[]) => {
-      windows.forEach((w) => {
+      const addedWindows = windows.filter(
+        (w) => !listeningWindowsRef.current.includes(w),
+      );
+      removedWindows.forEach((w) => {
         try {
           w.removeEventListener("keydown", handleKeydown, true);
         } catch {
           /* noop */
         }
       });
-    };
+      addedWindows.forEach((w) => {
+        try {
+          w.addEventListener("keydown", handleKeydown, true);
+          listeningWindowsRef.current.push(w);
+        } catch {
+          /* noop */
+        }
+      });
+    },
+    [handleKeydown],
+  );
 
-    const getWindows = (): Window[] => {
-      const parentWindow = parentRef.current?.ownerDocument?.defaultView;
-      return [
-        parentWindow,
-        ...iframeElementsRef.current.map((iframe) => {
+  const listenForKeyStrokes = React.useCallback(
+    ({ iframeElements }: { iframeElements: HTMLIFrameElement[] }) => {
+      const windows = [
+        parentRef.current?.ownerDocument?.defaultView,
+        ...iframeElements.map((iframe) => {
           try {
             return iframe.contentWindow;
           } catch {
             return null;
           }
         }),
-      ].filter((w): w is Window => w != null);
-    };
+      ].filter((v): v is Window => !!v);
+      listenWindows(windows);
+    },
+    [listenWindows, parentRef],
+  );
 
-    const windows = getWindows();
-    addListeners(windows);
+  React.useEffect(() => {
+    if (!showKeystrokes) {
+      setKeystrokes([]);
+      return;
+    }
+  }, [showKeystrokes]);
 
-    return () => {
-      removeListeners(windows);
-    };
-  }, [showKeystrokes, parentRef, iframeElementsRef]);
-
-  return keystrokes;
+  return {
+    keystrokes,
+    listenForKeyStrokes,
+  };
 };

@@ -14,7 +14,7 @@ const SPECIAL_KEY_MAP: Record<string, string> = {
   PageUp: "PageUp",
   PageDown: "PageDown",
   Insert: "Insert",
-  Dead: "(Dead)"
+  Dead: "(Dead)",
 };
 
 const MODIFIER_KEYS = new Set(["Control", "Alt", "Shift", "Meta"]);
