@@ -318,7 +318,13 @@ export const Root = ({
       {settings.showLiveRegions && announceMode === "self" && (
         <Announcements announcements={announcements} />
       )}
-      {settings.showKeystrokes && <Keystrokes keystrokes={keystrokes} />}
+      {settings.showKeystrokes && (
+        <Keystrokes
+          keystrokes={keystrokes}
+          opacityPercent={settings.keystrokeOpacityPercent}
+          fontSize={settings.keystrokeFontSize}
+        />
+      )}
     </section>
   );
 };

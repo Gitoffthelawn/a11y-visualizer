@@ -603,6 +603,53 @@ const DisplaySettingsSection = ({
           disabled={disabled || !settings.showKeystrokes}
         />
       </label>
+      <div className="flex flex-col gap-1 items-stretch px-2">
+        <div className="flex flex-row gap-2 items-center justify-between">
+          <label
+            className="text-sm shrink-0"
+            htmlFor={`${id}-keystrokeOpacityPercent`}
+          >
+            {t("settings.keystrokeOpacityPercent")}
+          </label>
+          <span>
+            <span className="text-sm font-bold shrink">
+              {settings.keystrokeOpacityPercent}
+            </span>
+            <span className="text-xs">%</span>
+          </span>
+        </div>
+        <input
+          id={`${id}-keystrokeOpacityPercent`}
+          className="accent-teal-600 dark:accent-teal-400"
+          type="range"
+          min={0}
+          max={100}
+          step={1}
+          value={settings.keystrokeOpacityPercent}
+          onChange={(e) => handleChangeNumber("keystrokeOpacityPercent", e)}
+          disabled={disabled || !settings.showKeystrokes}
+        />
+      </div>
+      <label className="flex flex-row gap-2 items-center justify-between px-2">
+        <span className="shrink text-sm">
+          {t("settings.keystrokeFontSize")}
+        </span>
+        <input
+          className="border-zinc-400 border-solid border rounded-md
+                py-0.5 px-1 text-sm text-right w-14 h-6
+                bg-white dark:bg-zinc-800
+                text-zinc-800 dark:text-zinc-300
+                disabled:opacity-60
+                "
+          type="number"
+          value={settings.keystrokeFontSize}
+          onChange={(e) => handleChangeNumber("keystrokeFontSize", e)}
+          min={8}
+          max={96}
+          step={4}
+          disabled={disabled || !settings.showKeystrokes}
+        />
+      </label>
     </div>
   );
 

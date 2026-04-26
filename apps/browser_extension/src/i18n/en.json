@@ -46,7 +46,9 @@
     "uncheckAll": "Uncheck all",
     "hideOutOfSightElementTips": "Hide visually obscured elements",
     "showKeystrokes": "Show keyboard operations",
-    "keystrokeDisplaySeconds": "Keyboard operation display duration (seconds)"
+    "keystrokeDisplaySeconds": "Keyboard operation display duration (seconds)",
+    "keystrokeOpacityPercent": "Keyboard operation opacity (%)",
+    "keystrokeFontSize": "Keyboard operation font size"
   },
   "presets": {
     "basic": "Basic",

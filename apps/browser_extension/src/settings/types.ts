@@ -44,6 +44,8 @@ export type Settings = {
   language: SupportedLanguage;
   showKeystrokes: boolean;
   keystrokeDisplaySeconds: number;
+  keystrokeOpacityPercent: number;
+  keystrokeFontSize: number;
 };
 
 export type SettingsMessage =

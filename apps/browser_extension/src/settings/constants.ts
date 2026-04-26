@@ -48,4 +48,6 @@ export const initialSettings: Settings = {
   language: "auto",
   showKeystrokes: false,
   keystrokeDisplaySeconds: 3,
+  keystrokeOpacityPercent: 80,
+  keystrokeFontSize: 32,
 } as const;

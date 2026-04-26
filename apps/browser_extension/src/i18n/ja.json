@@ -46,7 +46,9 @@
     "uncheckAll": "すべて外す",
     "hideOutOfSightElementTips": "視覚的に隠されている要素を非表示",
     "showKeystrokes": "キーボード操作を表示",
-    "keystrokeDisplaySeconds": "キーボード操作の表示秒数"
+    "keystrokeDisplaySeconds": "キーボード操作の表示秒数",
+    "keystrokeOpacityPercent": "キーボード操作の不透明度（%）",
+    "keystrokeFontSize": "キーボード操作の文字サイズ"
   },
   "presets": {
     "basic": "基本",
