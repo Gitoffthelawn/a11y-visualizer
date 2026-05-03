@@ -339,7 +339,7 @@ export const SettingsEditor = ({
               </div>
             )}
           </div>
-          <div className="flex flex-col gap-2 px-2">
+          <div className="px-2">
             <Checkbox
               onChange={(e) => {
                 handleChangeCheckbox("showLiveRegions", e);
@@ -351,6 +351,8 @@ export const SettingsEditor = ({
                 {t("settings.announceLiveRegions")}
               </span>
             </Checkbox>
+          </div>
+          <div className="px-2">
             <Checkbox
               onChange={(e) => {
                 handleChangeCheckbox("showKeystrokes", e);
@@ -402,25 +404,14 @@ const DisplaySettingsSection = ({
   const id = useId();
 
   const content = (
-    <div className="flex flex-col gap-2">
-      <div className="px-2 py-1 bg-zinc-100 dark:bg-zinc-800 rounded-md">
+    <div className="flex flex-col gap-4">
+      <div>
         <fieldset className="border-0 flex flex-col gap-2">
           <legend
-            className={`text-xs ${disabled ? "text-zinc-700 dark:text-zinc-300" : "text-teal-800 dark:text-teal-200"} font-bold mb-1`}
+            className={`text-sm ${disabled ? "text-zinc-700 dark:text-zinc-300" : "text-teal-800 dark:text-teal-200"} font-bold mb-1`}
           >
             {t("settings.tipDisplay")}
           </legend>
-          <Checkbox
-            onChange={(e) => {
-              handleChangeCheckbox("hideTips", e);
-            }}
-            checked={settings.hideTips}
-            disabled={disabled}
-          >
-            <span className="text-xs">
-              {t("settings.interactiveModeHideLabels")}
-            </span>
-          </Checkbox>
           <div className="flex flex-col gap-1 items-stretch">
             <div className="flex flex-row gap-2 items-center justify-between">
               <label
@@ -494,12 +485,23 @@ const DisplaySettingsSection = ({
               disabled={disabled}
             />
           </label>
+          <Checkbox
+            onChange={(e) => {
+              handleChangeCheckbox("hideTips", e);
+            }}
+            checked={settings.hideTips}
+            disabled={disabled}
+          >
+            <span className="text-xs">
+              {t("settings.interactiveModeHideLabels")}
+            </span>
+          </Checkbox>
         </fieldset>
       </div>
-      <div className="px-2 py-1 bg-zinc-100 dark:bg-zinc-800 rounded-md">
+      <div>
         <fieldset className="border-0 flex flex-col gap-2">
           <legend
-            className={`text-xs ${disabled ? "text-zinc-700 dark:text-zinc-300" : "text-teal-800 dark:text-teal-200"} font-bold mb-1`}
+            className={`text-sm ${disabled ? "text-zinc-700 dark:text-zinc-300" : "text-teal-800 dark:text-teal-200"} font-bold mb-1`}
           >
             {t("settings.liveRegionDisplay")}
           </legend>
@@ -595,10 +597,10 @@ const DisplaySettingsSection = ({
           </label>
         </fieldset>
       </div>
-      <div className="px-2 py-1 bg-zinc-100 dark:bg-zinc-800 rounded-md">
+      <div>
         <fieldset className="border-0 flex flex-col gap-2">
           <legend
-            className={`text-xs ${disabled ? "text-zinc-700 dark:text-zinc-300" : "text-teal-800 dark:text-teal-200"} font-bold mb-1`}
+            className={`text-sm ${disabled ? "text-zinc-700 dark:text-zinc-300" : "text-teal-800 dark:text-teal-200"} font-bold mb-1`}
           >
             {t("settings.keystrokeDisplay")}
           </legend>
@@ -676,12 +678,12 @@ const DisplaySettingsSection = ({
 
   if (!collapsed) {
     return (
-      <div className="flex flex-col gap-2">
-        <h3 className="text-sm font-bold text-zinc-700 dark:text-zinc-300">
+      <>
+        <h3 className="text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-2">
           {t("settings.displayCustomization")}
         </h3>
         {content}
-      </div>
+      </>
     );
   }
 
@@ -693,10 +695,10 @@ const DisplaySettingsSection = ({
         setIsCollapsed(!e.currentTarget.open);
       }}
     >
-      <summary className="cursor-pointer select-none text-sm font-bold text-zinc-700 dark:text-zinc-300 gap-1 mb-2">
+      <summary className="cursor-pointer select-none text-sm font-bold text-zinc-700 dark:text-zinc-300 gap-1">
         {t("settings.displayCustomization")}
       </summary>
-      {content}
+      <div className="mt-2">{content}</div>
     </details>
   );
 };

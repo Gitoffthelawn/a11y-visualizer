@@ -203,7 +203,7 @@ export const Popup = () => {
             showDisplaySettingsCollapsed={true}
             url={url}
           />
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 px-2 sm:px-2">
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 px-2 pt-3 sm:px-2">
             {t("popup.hostDesc")}
             {!isAndroidFirefox && (
               <button
