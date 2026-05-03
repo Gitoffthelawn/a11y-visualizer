@@ -403,146 +403,162 @@ const DisplaySettingsSection = ({
 
   const content = (
     <div className="flex flex-col gap-2">
-      <div className="px-2">
-        <Checkbox
-          onChange={(e) => {
-            handleChangeCheckbox("hideTips", e);
-          }}
-          checked={settings.hideTips}
-          disabled={
-            disabled || !settings.accessibilityInfo || !settings.interactiveMode
-          }
-        >
-          <span className="text-sm">
-            {t("settings.interactiveModeHideLabels")}
-          </span>
-        </Checkbox>
-      </div>
-      <div className="flex flex-col gap-1 items-stretch px-2">
-        <div className="flex flex-row gap-2 items-center justify-between">
-          <label className="text-sm shrink-0" htmlFor="tipOpacityPercent">
-            {t("settings.tipOpacityPercent")}
-          </label>
-          <span>
-            <span className="text-sm font-bold shrink">
-              {settings.tipOpacityPercent}
-            </span>
-            <span className="text-xs">%</span>
-          </span>
-        </div>
-        <input
-          id={`${id}-tipOpacityPercent`}
-          className="accent-teal-600 dark:accent-teal-400"
-          type="range"
-          min={0}
-          max={100}
-          step={1}
-          value={settings.tipOpacityPercent}
-          onChange={(e) => handleChangeNumber("tipOpacityPercent", e)}
-          disabled={disabled || !settings.accessibilityInfo}
-        />
-      </div>
-      <div className="flex flex-col gap-1 items-stretch px-2">
-        <div className="flex flex-row gap-2 items-center justify-between">
-          <label className="text-sm shrink-0" htmlFor="activeTipOpacityPercent">
-            {t("settings.activeTipOpacityPercent")}
-          </label>
-          <span>
-            <span className="text-sm font-bold shrink">
-              {settings.activeTipOpacityPercent}
-            </span>
-            <span className="text-xs">%</span>
-          </span>
-        </div>
-        <input
-          id={`${id}-activeTipOpacityPercent`}
-          className="accent-teal-600 dark:accent-teal-400"
-          type="range"
-          min={0}
-          max={100}
-          step={1}
-          value={settings.activeTipOpacityPercent}
-          onChange={(e) => handleChangeNumber("activeTipOpacityPercent", e)}
-          disabled={disabled || !settings.accessibilityInfo}
-        />
-      </div>
-      <label className="flex flex-row gap-2 items-center justify-between px-2">
-        <span className="shrink text-sm">{t("settings.tipFontSize")}</span>
-        <input
-          className="border-zinc-400 border-solid border rounded-md
-                py-0.5 px-1 text-sm text-right w-14 h-6
-                bg-white dark:bg-zinc-800
-                text-zinc-800 dark:text-zinc-300
-                disabled:opacity-60
-                "
-          type="number"
-          value={settings.tipFontSize}
-          onChange={(e) => {
-            handleChangeNumber("tipFontSize", e);
-          }}
-          min={8}
-          step={1}
-          disabled={disabled || !settings.accessibilityInfo}
-        />
-      </label>
-      <div className="flex flex-col gap-1 items-stretch px-2">
-        <div className="flex flex-row gap-2 items-center justify-between">
-          <label
-            className="text-sm shrink-0"
-            htmlFor="liveRegionOpacityPercent"
-          >
-            {t("settings.liveRegionOpacityPercent")}
-          </label>
-          <span>
-            <span className="text-sm font-bold shrink">
-              {settings.liveRegionOpacityPercent}
-            </span>
-            <span className="text-xs">%</span>
-          </span>
-        </div>
-        <input
-          id={`${id}-liveRegionOpacityPercent`}
-          className="accent-teal-600 dark:accent-teal-400"
-          type="range"
-          min={0}
-          max={100}
-          step={1}
-          value={settings.liveRegionOpacityPercent}
-          onChange={(e) => handleChangeNumber("liveRegionOpacityPercent", e)}
-          disabled={disabled || !settings.showLiveRegions}
-        />
-      </div>
-      <label className="flex flex-row gap-2 items-center justify-between px-2">
-        <span className="shrink text-sm">
-          {t("settings.liveRegionFontSize")}
-        </span>
-        <input
-          className="border-zinc-400 border-solid border rounded-md
-                py-0.5 px-1 text-sm text-right w-14 h-6
-                bg-white dark:bg-zinc-800
-                text-zinc-800 dark:text-zinc-300
-                disabled:opacity-60
-                "
-          type="number"
-          value={settings.liveRegionFontSize}
-          onChange={(e) => {
-            handleChangeNumber("liveRegionFontSize", e);
-          }}
-          min={8}
-          step={1}
-          disabled={disabled || !settings.showLiveRegions}
-        />
-      </label>
       <div className="px-2 py-1 bg-zinc-100 dark:bg-zinc-800 rounded-md">
         <fieldset className="border-0 flex flex-col gap-2">
           <legend
-            className={`text-xs ${disabled ? "text-zinc-700 dark:text-zinc-300" : "text-teal-800 dark:text-teal-200"} font-bold mb-1`}
+            className={`text-xs ${disabled || !settings.accessibilityInfo ? "text-zinc-700 dark:text-zinc-300" : "text-teal-800 dark:text-teal-200"} font-bold mb-1`}
+          >
+            {t("settings.tipDisplay")}
+          </legend>
+          <Checkbox
+            onChange={(e) => {
+              handleChangeCheckbox("hideTips", e);
+            }}
+            checked={settings.hideTips}
+            disabled={
+              disabled ||
+              !settings.accessibilityInfo ||
+              !settings.interactiveMode
+            }
+          >
+            <span className="text-xs">
+              {t("settings.interactiveModeHideLabels")}
+            </span>
+          </Checkbox>
+          <div className="flex flex-col gap-1 items-stretch">
+            <div className="flex flex-row gap-2 items-center justify-between">
+              <label
+                className="text-xs shrink-0"
+                htmlFor={`${id}-tipOpacityPercent`}
+              >
+                {t("settings.tipOpacityPercent")}
+              </label>
+              <span>
+                <span className="text-sm font-bold shrink">
+                  {settings.tipOpacityPercent}
+                </span>
+                <span className="text-xs">%</span>
+              </span>
+            </div>
+            <input
+              id={`${id}-tipOpacityPercent`}
+              className="accent-teal-600 dark:accent-teal-400"
+              type="range"
+              min={0}
+              max={100}
+              step={1}
+              value={settings.tipOpacityPercent}
+              onChange={(e) => handleChangeNumber("tipOpacityPercent", e)}
+              disabled={disabled || !settings.accessibilityInfo}
+            />
+          </div>
+          <div className="flex flex-col gap-1 items-stretch">
+            <div className="flex flex-row gap-2 items-center justify-between">
+              <label
+                className="text-xs shrink-0"
+                htmlFor={`${id}-activeTipOpacityPercent`}
+              >
+                {t("settings.activeTipOpacityPercent")}
+              </label>
+              <span>
+                <span className="text-sm font-bold shrink">
+                  {settings.activeTipOpacityPercent}
+                </span>
+                <span className="text-xs">%</span>
+              </span>
+            </div>
+            <input
+              id={`${id}-activeTipOpacityPercent`}
+              className="accent-teal-600 dark:accent-teal-400"
+              type="range"
+              min={0}
+              max={100}
+              step={1}
+              value={settings.activeTipOpacityPercent}
+              onChange={(e) => handleChangeNumber("activeTipOpacityPercent", e)}
+              disabled={disabled || !settings.accessibilityInfo}
+            />
+          </div>
+          <label className="flex flex-row gap-1 items-center justify-between">
+            <span className="shrink text-xs">{t("settings.tipFontSize")}</span>
+            <input
+              className="border-zinc-400 border-solid border rounded-md
+                py-0.5 px-1 text-sm text-right w-14 h-6
+                bg-white dark:bg-zinc-800
+                text-zinc-800 dark:text-zinc-300
+                disabled:opacity-60
+                "
+              type="number"
+              value={settings.tipFontSize}
+              onChange={(e) => {
+                handleChangeNumber("tipFontSize", e);
+              }}
+              min={8}
+              step={1}
+              disabled={disabled || !settings.accessibilityInfo}
+            />
+          </label>
+        </fieldset>
+      </div>
+      <div className="px-2 py-1 bg-zinc-100 dark:bg-zinc-800 rounded-md">
+        <fieldset className="border-0 flex flex-col gap-2">
+          <legend
+            className={`text-xs ${disabled || !settings.showLiveRegions ? "text-zinc-700 dark:text-zinc-300" : "text-teal-800 dark:text-teal-200"} font-bold mb-1`}
           >
             {t("settings.liveRegionDisplay")}
           </legend>
-
+          <div className="flex flex-col gap-1 items-stretch">
+            <div className="flex flex-row gap-2 items-center justify-between">
+              <label
+                className="text-xs shrink-0"
+                htmlFor={`${id}-liveRegionOpacityPercent`}
+              >
+                {t("settings.liveRegionOpacityPercent")}
+              </label>
+              <span>
+                <span className="text-sm font-bold shrink">
+                  {settings.liveRegionOpacityPercent}
+                </span>
+                <span className="text-xs">%</span>
+              </span>
+            </div>
+            <input
+              id={`${id}-liveRegionOpacityPercent`}
+              className="accent-teal-600 dark:accent-teal-400"
+              type="range"
+              min={0}
+              max={100}
+              step={1}
+              value={settings.liveRegionOpacityPercent}
+              onChange={(e) =>
+                handleChangeNumber("liveRegionOpacityPercent", e)
+              }
+              disabled={disabled || !settings.showLiveRegions}
+            />
+          </div>
           <label className="flex flex-row gap-1 items-center justify-between">
-            <span className="srhink text-xs">
+            <span className="shrink text-xs">
+              {t("settings.liveRegionFontSize")}
+            </span>
+            <input
+              className="border-zinc-400 border-solid border rounded-md
+                py-0.5 px-1 text-sm text-right w-14 h-6
+                bg-white dark:bg-zinc-800
+                text-zinc-800 dark:text-zinc-300
+                disabled:opacity-60
+                "
+              type="number"
+              value={settings.liveRegionFontSize}
+              onChange={(e) => {
+                handleChangeNumber("liveRegionFontSize", e);
+              }}
+              min={8}
+              step={1}
+              disabled={disabled || !settings.showLiveRegions}
+            />
+          </label>
+          <label className="flex flex-row gap-1 items-center justify-between">
+            <span className="shrink text-xs">
               {t("settings.announcementMaxSeconds")}
             </span>
             <input
@@ -583,73 +599,82 @@ const DisplaySettingsSection = ({
           </label>
         </fieldset>
       </div>
-      <label className="flex flex-row gap-2 items-center justify-between px-2">
-        <span className="shrink text-sm">
-          {t("settings.keystrokeDisplaySeconds")}
-        </span>
-        <input
-          className="border-zinc-400 border-solid border rounded-md
-                py-0.5 px-1 text-sm text-right w-14 h-6
-                bg-white dark:bg-zinc-800
-                text-zinc-800 dark:text-zinc-300
-                disabled:opacity-60
-                "
-          type="number"
-          value={settings.keystrokeDisplaySeconds}
-          onChange={(e) => handleChangeNumber("keystrokeDisplaySeconds", e)}
-          min={1}
-          max={30}
-          step={1}
-          disabled={disabled || !settings.showKeystrokes}
-        />
-      </label>
-      <div className="flex flex-col gap-1 items-stretch px-2">
-        <div className="flex flex-row gap-2 items-center justify-between">
-          <label
-            className="text-sm shrink-0"
-            htmlFor={`${id}-keystrokeOpacityPercent`}
+      <div className="px-2 py-1 bg-zinc-100 dark:bg-zinc-800 rounded-md">
+        <fieldset className="border-0 flex flex-col gap-2">
+          <legend
+            className={`text-xs ${disabled || !settings.showKeystrokes ? "text-zinc-700 dark:text-zinc-300" : "text-teal-800 dark:text-teal-200"} font-bold mb-1`}
           >
-            {t("settings.keystrokeOpacityPercent")}
-          </label>
-          <span>
-            <span className="text-sm font-bold shrink">
-              {settings.keystrokeOpacityPercent}
+            {t("settings.keystrokeDisplay")}
+          </legend>
+          <div className="flex flex-col gap-1 items-stretch">
+            <div className="flex flex-row gap-2 items-center justify-between">
+              <label
+                className="text-xs shrink-0"
+                htmlFor={`${id}-keystrokeOpacityPercent`}
+              >
+                {t("settings.keystrokeOpacityPercent")}
+              </label>
+              <span>
+                <span className="text-sm font-bold shrink">
+                  {settings.keystrokeOpacityPercent}
+                </span>
+                <span className="text-xs">%</span>
+              </span>
+            </div>
+            <input
+              id={`${id}-keystrokeOpacityPercent`}
+              className="accent-teal-600 dark:accent-teal-400"
+              type="range"
+              min={0}
+              max={100}
+              step={1}
+              value={settings.keystrokeOpacityPercent}
+              onChange={(e) => handleChangeNumber("keystrokeOpacityPercent", e)}
+              disabled={disabled || !settings.showKeystrokes}
+            />
+          </div>
+          <label className="flex flex-row gap-1 items-center justify-between">
+            <span className="shrink text-xs">
+              {t("settings.keystrokeFontSize")}
             </span>
-            <span className="text-xs">%</span>
-          </span>
-        </div>
-        <input
-          id={`${id}-keystrokeOpacityPercent`}
-          className="accent-teal-600 dark:accent-teal-400"
-          type="range"
-          min={0}
-          max={100}
-          step={1}
-          value={settings.keystrokeOpacityPercent}
-          onChange={(e) => handleChangeNumber("keystrokeOpacityPercent", e)}
-          disabled={disabled || !settings.showKeystrokes}
-        />
-      </div>
-      <label className="flex flex-row gap-2 items-center justify-between px-2">
-        <span className="shrink text-sm">
-          {t("settings.keystrokeFontSize")}
-        </span>
-        <input
-          className="border-zinc-400 border-solid border rounded-md
+            <input
+              className="border-zinc-400 border-solid border rounded-md
                 py-0.5 px-1 text-sm text-right w-14 h-6
                 bg-white dark:bg-zinc-800
                 text-zinc-800 dark:text-zinc-300
                 disabled:opacity-60
                 "
-          type="number"
-          value={settings.keystrokeFontSize}
-          onChange={(e) => handleChangeNumber("keystrokeFontSize", e)}
-          min={8}
-          max={96}
-          step={4}
-          disabled={disabled || !settings.showKeystrokes}
-        />
-      </label>
+              type="number"
+              value={settings.keystrokeFontSize}
+              onChange={(e) => handleChangeNumber("keystrokeFontSize", e)}
+              min={8}
+              max={96}
+              step={4}
+              disabled={disabled || !settings.showKeystrokes}
+            />
+          </label>
+          <label className="flex flex-row gap-1 items-center justify-between">
+            <span className="shrink text-xs">
+              {t("settings.keystrokeDisplaySeconds")}
+            </span>
+            <input
+              className="border-zinc-400 border-solid border rounded-md
+                py-0.5 px-1 text-sm text-right w-14 h-6
+                bg-white dark:bg-zinc-800
+                text-zinc-800 dark:text-zinc-300
+                disabled:opacity-60
+                "
+              type="number"
+              value={settings.keystrokeDisplaySeconds}
+              onChange={(e) => handleChangeNumber("keystrokeDisplaySeconds", e)}
+              min={1}
+              max={30}
+              step={1}
+              disabled={disabled || !settings.showKeystrokes}
+            />
+          </label>
+        </fieldset>
+      </div>
     </div>
   );
 
