@@ -21,7 +21,7 @@ describe("collectElements()", () => {
       <button>hoge</button><a href="https://example.com">link</a>
     `;
     const emptyResult = collectElements(document.body, [], {});
-    expect(emptyResult.elements).toHaveLength(0);
+    expect(emptyResult).toHaveLength(0);
   });
 
   test("image", () => {
@@ -37,9 +37,9 @@ describe("collectElements()", () => {
     document.body.appendChild(exclude);
 
     const result = collectElements(document.body, [exclude], { image: true });
-    expect(result.elements).toHaveLength(2);
-    expect(result.elements[0].category).toBe("image");
-    expect(result.elements[1].category).toBe("image");
+    expect(result).toHaveLength(2);
+    expect(result[0].category).toBe("image");
+    expect(result[1].category).toBe("image");
   });
 
   test("formControl", () => {
@@ -52,7 +52,7 @@ describe("collectElements()", () => {
     const exclude = document.createElement("div");
     document.body.appendChild(exclude);
     const result = collectElements(document.body, [], { formControl: true });
-    expect(result.elements).toHaveLength(3);
+    expect(result).toHaveLength(3);
   });
 
   test("link", () => {
@@ -62,7 +62,7 @@ describe("collectElements()", () => {
       <span role="link">hoge</span>
     `;
     const result = collectElements(document.body, [], { link: true });
-    expect(result.elements).toHaveLength(2);
+    expect(result).toHaveLength(2);
   });
 
   test("button", () => {
@@ -75,7 +75,7 @@ describe("collectElements()", () => {
       <span role="button">hoge</span>
     `;
     const result = collectElements(document.body, [], { button: true });
-    expect(result.elements).toHaveLength(5);
+    expect(result).toHaveLength(5);
   });
 
   test("heading", () => {
@@ -86,7 +86,7 @@ describe("collectElements()", () => {
       <p>hoge</p>
     `;
     const result = collectElements(document.body, [], { heading: true });
-    expect(result.elements).toHaveLength(3);
+    expect(result).toHaveLength(3);
   });
 
   test("waiAria", () => {
@@ -94,7 +94,35 @@ describe("collectElements()", () => {
       <h1>waiAria</h1>
       <div aria-hidden="true">hidden</div>`;
     const result = collectElements(document.body, [], { waiAria: true });
-    expect(result.elements).toHaveLength(1);
+    expect(result).toHaveLength(1);
+  });
+
+  describe("viewport options", () => {
+    test("viewportScrollX, viewportScrollY, viewportWidth, viewportHeight が指定された場合、window のプロパティの代わりに使用される", () => {
+      document.body.innerHTML = `
+        <img src="test.jpg" alt="Test image">
+      `;
+      const result = collectElements(
+        document.body,
+        [],
+        { image: true },
+        {
+          viewportScrollX: 0,
+          viewportScrollY: 0,
+          viewportWidth: 800,
+          viewportHeight: 600,
+        },
+      );
+      expect(result).toHaveLength(1);
+    });
+
+    test("viewport options が未指定の場合、window のプロパティが使用される", () => {
+      document.body.innerHTML = `
+        <img src="test.jpg" alt="Test image">
+      `;
+      const result = collectElements(document.body, [], { image: true }, {});
+      expect(result).toHaveLength(1);
+    });
   });
 
   describe("hideOutOfSightElementTips option", () => {
@@ -118,7 +146,7 @@ describe("collectElements()", () => {
       );
 
       expect(mockIsOutOfSight).not.toHaveBeenCalled();
-      expect(result.elements).toHaveLength(2);
+      expect(result).toHaveLength(2);
     });
 
     test("hideOutOfSightElementTips が true の場合、視覚的に見えない要素をフィルタする", () => {
@@ -140,7 +168,7 @@ describe("collectElements()", () => {
       );
 
       expect(mockIsOutOfSight).toHaveBeenCalledTimes(2);
-      expect(result.elements).toHaveLength(1);
+      expect(result).toHaveLength(1);
     });
 
     test("hideOutOfSightElementTips が undefined の場合、デフォルトでフィルタしない", () => {
@@ -157,7 +185,7 @@ describe("collectElements()", () => {
       );
 
       expect(mockIsOutOfSight).not.toHaveBeenCalled();
-      expect(result.elements).toHaveLength(2);
+      expect(result).toHaveLength(2);
     });
   });
 });

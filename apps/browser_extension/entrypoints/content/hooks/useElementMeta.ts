@@ -6,6 +6,7 @@ import {
 } from "../../../src/settings";
 import { SettingsContext } from "../contexts/SettingsContext";
 import { collectElements } from "../dom";
+import { getRootSize } from "../dom/getRootSize";
 import type { ElementMeta } from "../types";
 
 type Layer = {
@@ -15,28 +16,36 @@ type Layer = {
   height: number;
 };
 
+type ViewportOptions = {
+  viewportScrollX?: number;
+  viewportScrollY?: number;
+  viewportWidth?: number;
+  viewportHeight?: number;
+};
+
 const collectTopLayers = (
   el: Element,
   container: Element | null,
   categorySettings: CategorySettings,
   srcdoc: boolean | undefined,
   hideOutOfSightElementTips: boolean | undefined,
+  viewportOptions?: ViewportOptions,
 ) => {
   const elements = [...el.querySelectorAll("dialog, [popover]")];
   const layers: Layer[] = elements
     .map((element: Element): Layer | null => {
       if (container?.contains(element)) return null;
-      const { elements, rootHeight, rootWidth } = collectElements(
-        element,
-        [],
-        categorySettings,
-        { srcdoc, hideOutOfSightElementTips },
-      );
+      const metaList = collectElements(element, [], categorySettings, {
+        srcdoc,
+        hideOutOfSightElementTips,
+        ...viewportOptions,
+      });
+      const { width, height } = getRootSize(element);
       return {
         element,
-        metaList: elements,
-        width: rootWidth,
-        height: rootHeight,
+        metaList,
+        width,
+        height,
       };
     })
     .filter((el): el is Layer => !!el);
@@ -56,20 +65,16 @@ const collectIFrames = (
         const d = iframeWindow.document;
         const { readyState } = d;
         if (readyState === "complete") {
-          const { elements, rootHeight, rootWidth } = collectElements(
-            d.body,
-            [],
-            categorySettings,
-            {
-              srcdoc: iframe.hasAttribute("srcdoc"),
-              hideOutOfSightElementTips,
-            },
-          );
+          const metaList = collectElements(d.body, [], categorySettings, {
+            srcdoc: iframe.hasAttribute("srcdoc"),
+            hideOutOfSightElementTips,
+          });
+          const { width, height } = getRootSize(d.body);
           return {
             element: d.body,
-            metaList: elements,
-            width: rootWidth,
-            height: rootHeight,
+            metaList,
+            width,
+            height,
           };
         }
       } catch {
@@ -83,16 +88,22 @@ export const useElementMeta = ({
   parentRef,
   containerRef,
   srcdoc,
+  viewportScrollXRef,
+  viewportScrollYRef,
+  viewportWidthRef,
+  viewportHeightRef,
 }: {
   parentRef: React.RefObject<Element>;
   containerRef: React.RefObject<HTMLElement>;
   srcdoc?: boolean;
+  viewportScrollXRef: React.RefObject<number>;
+  viewportScrollYRef: React.RefObject<number>;
+  viewportWidthRef: React.RefObject<number>;
+  viewportHeightRef: React.RefObject<number>;
 }) => {
   const [metaList, setMetaList] = React.useState<ElementMeta[]>([]);
   const [topLayers, setTopLayers] = React.useState<Layer[]>([]);
   const [iframeLayers, setIframeLayers] = React.useState<Layer[]>([]);
-  const [width, setWidth] = React.useState<number>(0);
-  const [height, setHeight] = React.useState<number>(0);
   const settings = React.useContext(SettingsContext);
 
   const updateMetaList = React.useCallback(
@@ -100,8 +111,6 @@ export const useElementMeta = ({
       if (!containerRef.current) return;
       if (!parentRef.current) return;
       if (!settings.accessibilityInfo) {
-        setWidth(0);
-        setHeight(0);
         setMetaList([]);
         setIframeLayers([]);
         setTopLayers([]);
@@ -113,6 +122,13 @@ export const useElementMeta = ({
         defaultCustomCategorySettings,
       );
 
+      const viewportOptions: ViewportOptions = {
+        viewportScrollX: viewportScrollXRef?.current ?? undefined,
+        viewportScrollY: viewportScrollYRef?.current ?? undefined,
+        viewportWidth: viewportWidthRef?.current ?? undefined,
+        viewportHeight: viewportHeightRef?.current ?? undefined,
+      };
+
       const display = containerRef.current.style.display;
       containerRef.current.style.display = "none";
 
@@ -122,6 +138,7 @@ export const useElementMeta = ({
         categorySettings,
         srcdoc,
         settings.hideOutOfSightElementTips,
+        viewportOptions,
       );
       setTopLayers(topLayers);
       setIframeLayers(
@@ -132,7 +149,7 @@ export const useElementMeta = ({
         ),
       );
 
-      const { elements, rootHeight, rootWidth } = collectElements(
+      const elements = collectElements(
         parentRef.current,
         [containerRef.current, ...topLayers.map((e) => e.element)].filter(
           (el): el is Element => !!el,
@@ -141,21 +158,27 @@ export const useElementMeta = ({
         {
           srcdoc,
           hideOutOfSightElementTips: settings.hideOutOfSightElementTips,
+          ...viewportOptions,
         },
       );
       setMetaList(elements);
-      setWidth(rootWidth);
-      setHeight(rootHeight);
 
       containerRef.current.style.display = display;
     },
-    [containerRef, parentRef, settings, srcdoc],
+    [
+      containerRef,
+      parentRef,
+      settings,
+      srcdoc,
+      viewportScrollXRef,
+      viewportScrollYRef,
+      viewportWidthRef,
+      viewportHeightRef,
+    ],
   );
 
   return {
     metaList,
-    width,
-    height,
     topLayers,
     iframeLayers,
     updateMetaList,

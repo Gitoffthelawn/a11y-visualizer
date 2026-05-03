@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { createPortal } from "react-dom";
 import { Announcements } from "./components/Announcements";
 import { ElementList } from "./components/ElementList";
+import { Keystrokes } from "./components/Keystrokes";
 import { SettingsContext } from "./contexts/SettingsContext";
+import { getRootSize } from "./dom/getRootSize";
 import { useDebouncedCallback } from "./hooks/useDebouncedCallback";
 import { useElementMeta } from "./hooks/useElementMeta";
+import { useKeystrokes } from "./hooks/useKeystrokes";
 import { useLiveRegion } from "./hooks/useLiveRegion";
 import { injectRoot } from "./injectRoot";
 
@@ -76,20 +79,30 @@ export const Root = ({
   const settings = React.useContext(SettingsContext);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const framesRef = React.useRef<Element[]>([]);
-  const [iframeElements, setIframeElements] = React.useState<
-    HTMLIFrameElement[]
-  >([]);
+  const iframeElementsRef = React.useRef<HTMLIFrameElement[]>([]);
+
+  const [width, setWidth] = useState(0);
+  const [height, setHeight] = useState(0);
+  const viewportWidthRef = React.useRef(0);
+  const viewportHeightRef = React.useRef(0);
+  const viewportScrollXRef = React.useRef(0);
+  const viewportScrollYRef = React.useRef(0);
+
   const { announcements, observeLiveRegion } = useLiveRegion({
     parentRef,
-    iframeElements,
+    iframeElementsRef,
     renderType: options?.renderType,
   });
-  const { metaList, width, height, topLayers, iframeLayers, updateMetaList } =
-    useElementMeta({
-      parentRef,
-      containerRef,
-      srcdoc,
-    });
+  const { keystrokes, listenForKeyStrokes } = useKeystrokes({ parentRef });
+  const { metaList, topLayers, iframeLayers, updateMetaList } = useElementMeta({
+    parentRef,
+    containerRef,
+    srcdoc,
+    viewportScrollXRef,
+    viewportScrollYRef,
+    viewportWidthRef,
+    viewportHeightRef,
+  });
 
   const [outdated, setOutDated] = React.useState(false);
 
@@ -100,7 +113,7 @@ export const Root = ({
       if (!containerRef.current) return;
       if (!parentRef.current) return;
       const iframeElements = getIframeElements(parentRef.current);
-      setIframeElements(iframeElements);
+      iframeElementsRef.current = iframeElements;
 
       framesRef.current = injectToFrames(
         parentRef.current,
@@ -113,19 +126,54 @@ export const Root = ({
       observeLiveRegion(parentRef.current, {
         firstTime: firstTimeUpdateRef.current,
       });
+      listenForKeyStrokes({ iframeElements });
       updateMetaList(iframeElements);
       firstTimeUpdateRef.current = false;
     },
     200,
     [injectToFrames, settings, observeLiveRegion],
   );
+
+  const updateSize = useDebouncedCallback(
+    () => {
+      const { width, height } = getRootSize(parentRef.current);
+      setWidth(width);
+      setHeight(height);
+      const w = parentRef.current?.ownerDocument.defaultView;
+      viewportWidthRef.current = w?.innerWidth ?? viewportWidthRef.current;
+      viewportHeightRef.current = w?.innerHeight ?? viewportHeightRef.current;
+    },
+    200,
+    [parentRef, updateInfo],
+  );
+
+  const updateScroll = useDebouncedCallback(
+    () => {
+      const w = parentRef.current?.ownerDocument.defaultView;
+      viewportScrollXRef.current = w?.scrollX ?? viewportScrollXRef.current;
+      viewportScrollYRef.current = w?.scrollY ?? viewportScrollYRef.current;
+    },
+    200,
+    [parentRef, updateInfo],
+  );
+
+  const updateAll = useDebouncedCallback(
+    () => {
+      updateSize();
+      updateScroll();
+      updateInfo();
+    },
+    200,
+    [parentRef, updateInfo, updateSize, updateScroll],
+  );
+
   React.useEffect(() => {
     if (outdated) updateInfo();
   }, [updateInfo, outdated]);
 
   React.useEffect(() => {
-    updateInfo();
-    const observer = new MutationObserver(updateInfo);
+    updateAll();
+    const observer = new MutationObserver(updateAll);
     const childrenObserver = new MutationObserver((records) => {
       records.forEach((record) => {
         record.addedNodes.forEach((node) => {
@@ -158,11 +206,12 @@ export const Root = ({
       childrenObserver.disconnect();
       observer.disconnect();
     };
-  }, [parentRef, updateInfo]);
+  }, [parentRef, updateAll]);
 
   React.useEffect(() => {
+    const resizeEvents = ["resize"];
+    const scrollEvents = ["scroll"];
     const events = [
-      "resize",
       "scroll",
       "keydown",
       "mousedown",
@@ -171,13 +220,38 @@ export const Root = ({
       "change",
     ];
 
+    const onScroll = () => {
+      updateScroll();
+      updateInfo();
+    };
+    const onResize = () => {
+      updateSize();
+      updateInfo();
+    };
+
     const w = parentRef.current?.ownerDocument?.defaultView;
     const windows = [
       w,
-      ...iframeElements.map((iframe) => iframe.ownerDocument?.defaultView),
+      ...iframeElementsRef.current.map(
+        (iframe) => iframe.ownerDocument?.defaultView,
+      ),
     ];
     windows.forEach((w) => {
       if (!w) return;
+      resizeEvents.forEach((event) => {
+        try {
+          w.addEventListener(event, onResize);
+        } catch {
+          /* noop */
+        }
+      });
+      scrollEvents.forEach((event) => {
+        try {
+          w.addEventListener(event, onScroll);
+        } catch {
+          /* noop */
+        }
+      });
       events.forEach((event) => {
         try {
           w.addEventListener(event, updateInfo);
@@ -186,9 +260,24 @@ export const Root = ({
         }
       });
     });
+
     return () => {
       windows.forEach((w) => {
         if (!w) return;
+        resizeEvents.forEach((event) => {
+          try {
+            w.removeEventListener(event, onResize);
+          } catch {
+            /* noop */
+          }
+        });
+        scrollEvents.forEach((event) => {
+          try {
+            w.removeEventListener(event, onScroll);
+          } catch {
+            /* noop */
+          }
+        });
         events.forEach((event) => {
           try {
             w.removeEventListener(event, updateInfo);
@@ -198,7 +287,7 @@ export const Root = ({
         });
       });
     };
-  }, [iframeElements, parentRef, updateInfo]);
+  }, [parentRef, updateInfo, updateSize, updateScroll]);
 
   return (
     <section
@@ -228,6 +317,13 @@ export const Root = ({
       )}
       {settings.showLiveRegions && announceMode === "self" && (
         <Announcements announcements={announcements} />
+      )}
+      {settings.showKeystrokes && (
+        <Keystrokes
+          keystrokes={keystrokes}
+          opacityPercent={settings.keystrokeOpacityPercent}
+          fontSize={settings.keystrokeFontSize}
+        />
       )}
     </section>
   );

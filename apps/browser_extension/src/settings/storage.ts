@@ -88,6 +88,18 @@ function migrateLegacySettings(settings: unknown): Settings {
       language:
         (settingsObj.language as Settings["language"]) ??
         initialSettings.language,
+      showKeystrokes:
+        (settingsObj.showKeystrokes as boolean) ??
+        initialSettings.showKeystrokes,
+      keystrokeDisplaySeconds:
+        (settingsObj.keystrokeDisplaySeconds as number) ??
+        initialSettings.keystrokeDisplaySeconds,
+      keystrokeOpacityPercent:
+        (settingsObj.keystrokeOpacityPercent as number) ??
+        initialSettings.keystrokeOpacityPercent,
+      keystrokeFontSize:
+        (settingsObj.keystrokeFontSize as number) ??
+        initialSettings.keystrokeFontSize,
     };
   }
 
@@ -101,6 +113,21 @@ function migrateLegacySettings(settings: unknown): Settings {
     newSettings.activeTipOpacityPercent = !interactiveMode
       ? tipOpacityPercent
       : initialSettings.activeTipOpacityPercent;
+  }
+
+  if (typeof newSettings.showKeystrokes === "undefined") {
+    newSettings.showKeystrokes = initialSettings.showKeystrokes;
+  }
+  if (typeof newSettings.keystrokeDisplaySeconds === "undefined") {
+    newSettings.keystrokeDisplaySeconds =
+      initialSettings.keystrokeDisplaySeconds;
+  }
+  if (typeof newSettings.keystrokeOpacityPercent === "undefined") {
+    newSettings.keystrokeOpacityPercent =
+      initialSettings.keystrokeOpacityPercent;
+  }
+  if (typeof newSettings.keystrokeFontSize === "undefined") {
+    newSettings.keystrokeFontSize = initialSettings.keystrokeFontSize;
   }
 
   return newSettings;

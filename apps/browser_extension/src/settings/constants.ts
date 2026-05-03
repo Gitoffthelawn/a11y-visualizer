@@ -46,4 +46,8 @@ export const initialSettings: Settings = {
     presetId: "basic",
   },
   language: "auto",
+  showKeystrokes: false,
+  keystrokeDisplaySeconds: 3,
+  keystrokeOpacityPercent: 80,
+  keystrokeFontSize: 32,
 } as const;
