@@ -406,7 +406,7 @@ const DisplaySettingsSection = ({
       <div className="px-2 py-1 bg-zinc-100 dark:bg-zinc-800 rounded-md">
         <fieldset className="border-0 flex flex-col gap-2">
           <legend
-            className={`text-xs ${disabled || !settings.accessibilityInfo ? "text-zinc-700 dark:text-zinc-300" : "text-teal-800 dark:text-teal-200"} font-bold mb-1`}
+            className={`text-xs ${disabled ? "text-zinc-700 dark:text-zinc-300" : "text-teal-800 dark:text-teal-200"} font-bold mb-1`}
           >
             {t("settings.tipDisplay")}
           </legend>
@@ -415,11 +415,7 @@ const DisplaySettingsSection = ({
               handleChangeCheckbox("hideTips", e);
             }}
             checked={settings.hideTips}
-            disabled={
-              disabled ||
-              !settings.accessibilityInfo ||
-              !settings.interactiveMode
-            }
+            disabled={disabled}
           >
             <span className="text-xs">
               {t("settings.interactiveModeHideLabels")}
@@ -449,7 +445,7 @@ const DisplaySettingsSection = ({
               step={1}
               value={settings.tipOpacityPercent}
               onChange={(e) => handleChangeNumber("tipOpacityPercent", e)}
-              disabled={disabled || !settings.accessibilityInfo}
+              disabled={disabled}
             />
           </div>
           <div className="flex flex-col gap-1 items-stretch">
@@ -476,7 +472,7 @@ const DisplaySettingsSection = ({
               step={1}
               value={settings.activeTipOpacityPercent}
               onChange={(e) => handleChangeNumber("activeTipOpacityPercent", e)}
-              disabled={disabled || !settings.accessibilityInfo}
+              disabled={disabled}
             />
           </div>
           <label className="flex flex-row gap-1 items-center justify-between">
@@ -495,7 +491,7 @@ const DisplaySettingsSection = ({
               }}
               min={8}
               step={1}
-              disabled={disabled || !settings.accessibilityInfo}
+              disabled={disabled}
             />
           </label>
         </fieldset>
@@ -503,7 +499,7 @@ const DisplaySettingsSection = ({
       <div className="px-2 py-1 bg-zinc-100 dark:bg-zinc-800 rounded-md">
         <fieldset className="border-0 flex flex-col gap-2">
           <legend
-            className={`text-xs ${disabled || !settings.showLiveRegions ? "text-zinc-700 dark:text-zinc-300" : "text-teal-800 dark:text-teal-200"} font-bold mb-1`}
+            className={`text-xs ${disabled ? "text-zinc-700 dark:text-zinc-300" : "text-teal-800 dark:text-teal-200"} font-bold mb-1`}
           >
             {t("settings.liveRegionDisplay")}
           </legend>
@@ -533,7 +529,7 @@ const DisplaySettingsSection = ({
               onChange={(e) =>
                 handleChangeNumber("liveRegionOpacityPercent", e)
               }
-              disabled={disabled || !settings.showLiveRegions}
+              disabled={disabled}
             />
           </div>
           <label className="flex flex-row gap-1 items-center justify-between">
@@ -554,7 +550,7 @@ const DisplaySettingsSection = ({
               }}
               min={8}
               step={1}
-              disabled={disabled || !settings.showLiveRegions}
+              disabled={disabled}
             />
           </label>
           <label className="flex flex-row gap-1 items-center justify-between">
@@ -573,7 +569,7 @@ const DisplaySettingsSection = ({
               onChange={(e) => handleChangeNumber("announcementMaxSeconds", e)}
               min={1}
               step={1}
-              disabled={disabled || !settings.showLiveRegions}
+              disabled={disabled}
             />
           </label>
           <label className="flex flex-row gap-1 items-center justify-between">
@@ -594,7 +590,7 @@ const DisplaySettingsSection = ({
               }
               min={0.1}
               step={0.1}
-              disabled={disabled || !settings.showLiveRegions}
+              disabled={disabled}
             />
           </label>
         </fieldset>
@@ -602,7 +598,7 @@ const DisplaySettingsSection = ({
       <div className="px-2 py-1 bg-zinc-100 dark:bg-zinc-800 rounded-md">
         <fieldset className="border-0 flex flex-col gap-2">
           <legend
-            className={`text-xs ${disabled || !settings.showKeystrokes ? "text-zinc-700 dark:text-zinc-300" : "text-teal-800 dark:text-teal-200"} font-bold mb-1`}
+            className={`text-xs ${disabled ? "text-zinc-700 dark:text-zinc-300" : "text-teal-800 dark:text-teal-200"} font-bold mb-1`}
           >
             {t("settings.keystrokeDisplay")}
           </legend>
@@ -630,7 +626,7 @@ const DisplaySettingsSection = ({
               step={1}
               value={settings.keystrokeOpacityPercent}
               onChange={(e) => handleChangeNumber("keystrokeOpacityPercent", e)}
-              disabled={disabled || !settings.showKeystrokes}
+              disabled={disabled}
             />
           </div>
           <label className="flex flex-row gap-1 items-center justify-between">
@@ -650,7 +646,7 @@ const DisplaySettingsSection = ({
               min={8}
               max={96}
               step={4}
-              disabled={disabled || !settings.showKeystrokes}
+              disabled={disabled}
             />
           </label>
           <label className="flex flex-row gap-1 items-center justify-between">
@@ -670,7 +666,7 @@ const DisplaySettingsSection = ({
               min={1}
               max={30}
               step={1}
-              disabled={disabled || !settings.showKeystrokes}
+              disabled={disabled}
             />
           </label>
         </fieldset>
